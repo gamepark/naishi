@@ -175,7 +175,7 @@ Options are declared in `rules/src/[Game]Options.ts` with `OptionsSpecV2` — **
 and no text**. The platform snapshots it when the bundle is prepared and reads it from its database.
 
 ```typescript
-export const GameTemplateOptionsSpecV2: OptionsSpecV2 = {
+export const NaishiOptionsSpecV2: OptionsSpecV2 = {
   specVersion: 2,
   players: { min: 2, max: 4 },
   identities: { values: getEnumValues(PlayerColor) }
@@ -212,3 +212,45 @@ Check the `version` in `rules/package.json`:
 3. **Test incrementally** - suggest testing after each major change
 4. **Reference documentation** when explaining concepts
 5. **Start with MaterialType/LocationType** for new games
+
+## Naishi — project notes
+
+Game: 2 players, cards only (Hand of 5 + Line of 5, River of 5 draw piles, Imperial Court board with 4 emissary tokens).
+Rulebooks (authority): `app/public/rules-{fr,en}.pdf` (base game) and `app/public/rules-extension-{fr,en}.pdf`
+(**Legends & Travellers** extension). Open rule questions for the publisher: `QUESTIONS-EDITEUR.md`.
+
+The extension is part of the development scope. Design it in from the start as an optional module
+(game option, off by default):
+- setup: the Legends and Travellers are added to the River piles only, after the Hands are dealt (none in the Hands at the start); 3 of 7 Legend cards (each replaces one base copy), 5 of 6 Traveller cards, 7 cards per River pile (base: 6), Ryokan card set aside
+- Legends: alternative scoring for Naishi, Advisor, Sentinel, Horseman, Monk, Ronin, Ninja
+- Travellers: no points, no icon, effects on entering from the River or leaving to the discard; Ryokan card (face 4 / face 7) counts as an 11th card at scoring
+
+### Publisher decisions (Legends & Travellers) — see QUESTIONS-EDITEUR.md
+- Legendary Horseman: an adjacent banner counts 8 (4 + 4), a building 4.
+- Legendary Naishi: scores in the centre of Line and of Hand, and at the Line's ends only.
+- Setup: each legendary character drawn (Naishi, Advisor, Ninja) replaces the base copy 1 for 1 (remove one base copy).
+- Base Ninja copies a character of its own territory; legendary Ninja copies an opponent's character.
+- Ryokan is adjacent to nothing. Travellers have no scoring effect, adjacency irrelevant.
+- Traveller "enter" effect: only when taken from the River (not via swap / imperial decree).
+- Traveller "leave" effect: only when discarded to develop (not when swapped away).
+- "Develop immediately" may bring in another Traveller; simultaneous triggers: the player picks the order.
+- End of game trigger (2 exhausted piles) unchanged with 7-card piles.
+- Travellers: one copy each (6 cards, 5 drawn). Legends: one copy each (7 cards, 3 drawn), each replaces one base copy. Ryokan: starts off-play beside the River, face 4 up (face 7 on the back): confirmed by the publisher, nobody owns it until a Traveller enters a territory.
+- First-player marker (page 51 of base card PDF) is a separate item placed beside the board on the starting player's side (black or white), not part of the deck.
+- Emissary tokens: 2 white (black tomoe art) for White, 2 black (white flower art, colours inverted from the source PDF) for Black.
+
+## Model (rules/src)
+
+No player identities: `players` = [1, 2], the seat decides. Player 1 = first player = black Emissaries (white flower) and the First player card; player 2 = white Emissaries (black tomoe). Emissary and First player card item `id` = the player.
+
+- `MaterialType`: Card (id = `CardId`), Emissary, FirstPlayerCard, Ryokan (`location.rotation: true` = face 7), CourtBoard (static).
+- Hand and Line: fixed slots, `x` = position (no location strategy). River: `x` = pile, revealed card. RiverDeck: `id` = pile, `x` = order, top = highest `x`. Discarded cards go face up to `LocationType.Discard` (a pile beside the River), they are never deleted.
+- Secret information: Hand hidden to the opponent (`hideItemIdToOthers`), RiverDeck hidden to everybody.
+- Setup steps 6 and 7 (give a Development card, shuffle the Hand) are the first rule (`ExchangeCardsRule`).
+- Rules: `PlayerTurn` (one main action + one optional additional action; the turn ends by itself once both are done, otherwise the player confirms; an Emissary can be dragged back to the reserve until its action is done), `SwapCards`, `DiscardRiverCards`, `ImperialDecree`, `EndOfGame`, `ChooseNinjaCopy`. Extension: `ResolveTravellerEffects` (effects are optional, order chosen by the player), `SwapTerritoryCards`, `DevelopFromTraveller`. The card replaced by a development goes to `LocationType.Discard` (shown to everybody): a Traveller that leaves has an effect that depends on it, and a hidden Hand card must be revealed.
+- Score: `rules/src/scoring/TerritoryScore.ts` (pure function, tests = rulebook example 62 pts + one test per legend). Final rulebook of the extension = `app/public/rules-extension-fr.pdf` (the v3 draft in `Naishi Ext/` is outdated).
+- Traveller effects (`rules/src/material/Traveller.ts`): enter from the River = Cherry Lady (swap 2), Porter (recall), Samurai (Ryokan side 7); leave = Umbrella Lady (swap 2), Old Man (recall), Girl (develop).
+
+## Tutorial
+
+Scenario: `TUTORIEL.md` (the publisher's source, with his corrections). Code: `rules/src/NaishiTutorialSetup.ts` (standard Lines; fixed cards: Sentinel revealed in pile 2, Fortress in the middle of the River with a Naishi under it, no Banner/Ninja in the Hands, Ronin at the bottom of piles 2 and 4) and `app/src/tutorial/NaishiTutorial.tsx` (steps 1 to 20, scripted opponent moves, each step = one `TutorialStep`; the opponent plays a random development except the middle card at step 8). After the last step the game is free: `TutorialFreePlay.tsx` shows popups when a situation happens (keys `tutorial.ninja`, `pile`, `final`, `count`, `copy`). In the tutorial the opponent never declares the end of the game (`PlayerTurnRule.getDeclareEndMoves`). Local test: `game.tutorial()` in the browser console.

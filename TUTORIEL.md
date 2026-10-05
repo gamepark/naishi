@@ -1,0 +1,84 @@
+# Naishi — scénario du tutoriel (version corrigée)
+
+Jeu de base seul (sans l'extension). Une ligne du tableau = une étape du tutoriel. Le code suit cette version ; l'ancienne version (avant les corrections du point 7) est remplacée.
+
+Vocabulaire du jeu : **Étendard**, Fortin, Naishi, Intervertir, Décret impérial.
+
+## 1. Mise en place du tutoriel
+
+Mise en place standard (5 Montagnes devant chaque joueur), avec ces réglages en plus.
+
+- **Le Fortin est au centre de la Rivière** (pile 3), avec une **Naishi dessous** : elle est révélée quand le joueur prend le Fortin.
+- **Aucun Étendard ni aucun Ninja dans les mains** de départ, et aucun Ninja parmi les 2 premières cartes de chaque pile.
+- **Les Ronin sont tout en bas** des piles 2 et 4 (les deux Ronin du jeu).
+- Autres cartes révélées : pile 1 Rizière, **pile 2 Sentinelle**, pile 4 Conseiller, pile 5 Moine.
+- Cartes de développement en main : joueur Conseiller + Moine, adversaire Sentinelle + Torii.
+- Le reste des piles est tiré au hasard. Les piles gardent leurs 6 cartes.
+
+## 2. Scénario
+
+| #   | Texte                                                                                                                                                                                                                                                                                                                   | Mise en avant                             | Action                                                                         |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
+| 1   | Bienvenue dans Naishi ! Vous recrutez des personnages et des bâtiments pour développer votre territoire. Celui qui marque le plus de points à la fin de la partie gagne.                                                                                                                                                | aucune                                    | Continuer                                                                      |
+| 2   | Voici votre **territoire** : une **Ligne** de 5 cartes, visibles de tous, et une **Main** de 5 cartes, cachées à votre adversaire. Pour l'instant, ce sont surtout des Montagnes. **Vos cartes ne peuvent pas être réarrangées librement.** _À tout moment, cliquez sur un élément pour en savoir plus._                | ma Ligne et ma Main                       | Continuer                                                                      |
+| 3   | Voici la **Rivière** : 5 piles. La carte du dessus de chaque pile est visible : vous pouvez la prendre.                                                                                                                                                                                                                 | la Rivière                                | Continuer                                                                      |
+| 4   | Pour commencer, chaque joueur donne une carte de développement à son adversaire. Choisissez celle que vous donnez.                                                                                                                                                                                                      | mes 2 cartes de développement             | Donner une carte                                                               |
+| 5   | Votre adversaire a fait de même. Votre Main est mélangée : il ne sait pas où est chaque carte.                                                                                                                                                                                                                          | ma Main                                   | Continuer                                                                      |
+| 6   | À vous de jouer ! Pour **développer** votre territoire, vous êtes obligé de prendre une carte de la Rivière qui est dans la **même position** que celle de votre Ligne ou de votre Main dont vous voulez vous débarrasser. Glissez la **Sentinelle** sur la carte de la **position 2** de votre Ligne ou de votre Main. | la Sentinelle, la position 2              | Développer la Sentinelle en position 2 (Ligne ou Main)                         |
+| 7   | Développer est l'**action principale** de votre tour. Terminez votre tour avec le bouton en haut de l'écran.                                                                                                                                                                                                            | la carte de la position 2                 | Terminer le tour                                                               |
+| 8   | L'adversaire joue son tour et développe une carte.                                                                                                                                                                                                                                                                      | la Rivière                                | _(coup de l'adversaire au hasard, sauf la carte du centre)_                    |
+| 9   | Regardez le **Fortin**, au centre de la Rivière. À la fin de la partie, chaque Fortin placé sur un **bord** de votre territoire (à gauche ou à droite) rapporte **6 points**.                                                                                                                                           | le Fortin                                 | Continuer                                                                      |
+| 10  | Mais le Fortin est dans la pile 3 : il ira au **centre** de votre territoire, où il ne rapporte rien. Prenez-le quand même, on va le déplacer : glissez-le sur la carte du centre de votre Ligne.                                                                                                                       | le Fortin, la carte du centre de ma Ligne | Développer le Fortin en position 3 de la Ligne                                 |
+| 11  | Pour le déplacer, envoyez un **émissaire** sur la **cour impériale**. C'est l'**action additionnelle** de votre tour, facultative. Glissez un émissaire sur le cercle **Intervertir**. _Point important : cette action peut être utilisée avant ou après avoir fait son action de développement._                       | mes émissaires, les cercles Intervertir   | Glisser un émissaire sur Intervertir                                           |
+| 12  | **Intervertir** échange 2 cartes. Glissez le Fortin sur la Montagne du bord gauche de votre Ligne.                                                                                                                                                                                                                      | le Fortin, la Montagne de gauche          | Échanger les 2 cartes                                                          |
+| 13  | Les émissaires permettent une autre action additionnelle : **Défausser 2 cartes de la Rivière**, de 2 piles différentes. Mais vous êtes limité à **un seul émissaire par tour**.                                                                                                                                        | les cercles Défausser 2 cartes            | Continuer                                                                      |
+| 14  | Le Fortin est sur un bord, et vos deux actions sont faites : votre tour se termine tout seul.                                                                                                                                                                                                                           | le Fortin (bord gauche de ma Ligne)       | Continuer                                                                      |
+| 15  | En prenant le Fortin, vous avez aussi **révélé** la carte suivante : une **Naishi** !                                                                                                                                                                                                                                   | la carte révélée de la pile 3             | Continuer                                                                      |
+| 16  | Votre adversaire joue : il prend la Naishi et la place au centre de sa Ligne. Elle rapporte **12 points** à cet endroit.                                                                                                                                                                                                | la Naishi                                 | _(coup écrit d'avance : l'adversaire prend la Naishi, position 3 de sa Ligne)_ |
+| 17  | Votre adversaire a pris la Naishi et l'a placée au centre de sa Ligne : elle lui rapporte **12 points** à cet endroit.                                                                                                                                                                                                  | la Naishi au centre de sa Ligne           | Continuer (pause, validée avec OK)                                             |
+| 18  | Cette Naishi vous ferait bien envie ! Le **Décret impérial** permet d'échanger une de vos cartes avec celle de votre adversaire, à la même position. Glissez un émissaire sur le **cadenas**.                                                                                                                           | la Naishi, le cadenas                     | Glisser un émissaire sur le Décret                                             |
+| 19  | Glissez votre Montagne du centre sur sa Naishi. Vous prenez sa Naishi, il prend votre Montagne.                                                                                                                                                                                                                         | ma carte du centre, la Naishi             | Échanger les 2 cartes                                                          |
+| 20  | Le Décret est une action principale : votre tour se termine. L'émissaire du Décret reste **bloqué** sur la cour jusqu'à la fin de la partie.                                                                                                                                                                            | l'émissaire sur le cadenas                | Continuer                                                                      |
+| 21  | L'adversaire joue son tour et développe une carte.                                                                                                                                                                                                                                                                      | sa Ligne                                  | _(coup de l'adversaire au hasard)_                                             |
+| 22  | Utilisez **Rappeler mes émissaires**, pour rappeler vos émissaires, mais cela vous prendra tout votre tour. Celui du Décret ne reviendra pas.                                                                                                                                                                           | aucune                                    | Cliquer sur Rappeler                                                           |
+| 23  | Vous savez l'essentiel. **À vous de jouer librement** : développez votre territoire comme vous voulez. Le tutoriel reprend quand une pile de la Rivière sera épuisée.                                                                                                                                                   | aucune                                    | Jouer librement                                                                |
+
+### Jeu libre : fenêtres qui s'ouvrent selon la situation
+
+| Situation                               | Texte                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Un **Ninja** est révélé dans la Rivière | Un **Ninja** est apparu dans la Rivière ! À la fin de la partie, il **copie un personnage** de votre territoire : il prend sa couleur et ses points. Si vous n'avez aucun personnage, il ne vaut rien. Le prendre est donc un pari.                                                                                                        |
+| Une pile est **épuisée**, à votre tour  | Une pile de la Rivière est **épuisée** ! La partie se termine quand **2 piles** sont épuisées. Mais dès qu'une pile est épuisée, vous pouvez aussi **déclarer la fin de la partie** à la place de votre action principale, avec le bouton en haut de l'écran : votre adversaire joue alors un **dernier tour**, puis on compte les points. |
+| La **fin est déclenchée**               | Un bandeau rouge rappelle que la fin de la partie est déclenchée. Le dernier tour est joué, puis on compte les points.                                                                                                                                                                                                                     |
+| La partie est **terminée**              | Les mains sont révélées, les Ninjas copient un personnage, puis les points s'inscrivent sur le **bloc de score**, ligne par ligne.                                                                                                                                                                                                         |
+| Vous devez choisir la copie d'un Ninja  | Vous avez un Ninja : choisissez le personnage qu'il copie, avec le bouton « Copier ».                                                                                                                                                                                                                                                      |
+
+## 3. Coups de l'adversaire
+
+1. Étape 4 : il donne sa Sentinelle.
+2. Étape 8 : un développement **au hasard**, sauf la carte du centre de la Rivière.
+3. Étape 16 : il prend la Naishi (révélée au centre de la Rivière) et la place en position 3 de sa Ligne.
+4. Étape 21 : un développement au hasard.
+5. Ensuite : coups au hasard, sans jamais déclarer la fin de la partie.
+
+## 4. Choix d'interprétation (point 7), à corriger si besoin
+
+- « Frontend » et « Fortin » : j'ai compris le **Fortin**. « Naiji » et « Naichi » : la **Naishi**.
+- **Correction 2** : « la main et la ligne sont bloquées » = une carte de la Rivière va toujours à la position de sa pile, on ne choisit pas où la mettre. Le joueur choisit seulement entre la Ligne et la Main.
+- **Corrections 4 et 5** : le Fortin est pris **à sa position (centre de la Ligne)**, puis déplacé sur le bord avec Intervertir (échange de 2 cartes de **sa propre Ligne**). Cela révèle la Naishi de la pile 3, que l'adversaire prend. Plus besoin d'échanger deux cartes de la Rivière.
+
+## 7. Corrections (toutes appliquées ci-dessus)
+
+Je vais te demander de mettre à la ligne des phrases, fais un écart de paragraphe dans ce cas pour améliorier la lisibilité.
+Lorsque je demande de dézoomer, remettre en visible l'ensemble de la table.
+
+- tutorial.2 : Faire un saut de lignepour isoler la dernière phrase "A tout moment..."
+- tutorial.3 : Remplace le texte : "Voici la **Rivière**. [à la ligne] La carte du dessus de chaque sera disponible pour entrer dans votre **territoire** mais en **respectant sa position**.
+- tutorial.4 dézoomer
+- tutorial.7 dézoomer
+- tutorial.8 "Vous avez réalisé votre action de développement et une action factulative d'émissaire : votre tour se termine tout seul."
+- tutorial.16 dézoomer
+- tutorial.17 ne pas zoomer
+- tutorial.18 dézoomer
+- tutorial.21 dézoomer
+- tutorial.22 dézoomer

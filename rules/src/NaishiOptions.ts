@@ -1,38 +1,24 @@
-import { getEnumValues, OptionsSpecV2 } from '@gamepark/rules-api'
-import { PlayerColor } from './PlayerColor'
-
-/**
- * This is the options for each player in the game.
- */
-type PlayerOptions = { id: PlayerColor }
+import { OptionsSpecV2 } from '@gamepark/rules-api'
 
 /**
  * This is the type of object that the game receives when a new game is started.
- * The first generic parameter, "{}", can be changed to include game options like variants or expansions.
+ * There are no player identities: the seat decides everything. The first player (`players[0]`) plays with the
+ * black Emissaries (white flower), the second player with the white Emissaries (black tomoe).
  */
-export type GameTemplateOptions = {
-  players: PlayerOptions[]
+export type NaishiOptions = {
+  players: number
+  /** Legends & Travellers extension */
+  legendsAndTravellers?: boolean
 }
 
 /**
  * The structure of everything a host can choose before the game starts — and nothing else.
- *
- * Two things are deliberately absent, both because they change without the game changing:
- *
- * - **Text.** No labels, no help. They live in `app/public/options/<locale>.json`, published beside the
- *   game's translations and keyed by convention: `option.<option>`, `option.<option>.<value>`,
- *   `identities.<value>`, plus optional `.help` variants. See the files in that folder.
- * - **Subscription and competitive gates.** Which options require a subscription, and which are allowed
- *   in ranked play, are the platform's decisions. They live in its database and are edited there.
- *
- * The declaration is plain JSON on purpose: the platform snapshots it when the bundle is prepared, so
- * every screen reads the option space without downloading and running a game bundle.
- *
- * `players` must match the range declared for the game on the platform — it is the root that every other
- * range narrows, and a disagreement silently changes which tables exist.
+ * Texts live in `app/public/options/<locale>.json`, see `option.legendsAndTravellers`.
  */
-export const GameTemplateOptionsSpecV2: OptionsSpecV2 = {
+export const NaishiOptionsSpecV2: OptionsSpecV2 = {
   specVersion: 2,
-  players: { min: 2, max: 4 },
-  identities: { values: getEnumValues(PlayerColor) }
+  players: { min: 2, max: 2 },
+  options: {
+    legendsAndTravellers: { kind: 'boolean' }
+  }
 }

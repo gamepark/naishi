@@ -1,3 +1,3 @@
-export { GameTemplateRules } from './GameTemplateRules'
-export { GameTemplateOptionsSpecV2 } from './GameTemplateOptions'
-export { GameTemplateSetup } from './GameTemplateSetup'
+export { NaishiRules } from './NaishiRules'
+export { NaishiOptionsSpecV2 } from './NaishiOptions'
+export { NaishiSetup } from './NaishiSetup'

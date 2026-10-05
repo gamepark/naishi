@@ -1,4 +1,4 @@
-# Game Park - Board Game Template
+# Game Park - Board Naishi
 
 Template to adapt board games for [Game Park](https://game-park.com/).
 
@@ -33,9 +33,9 @@ game.undo()               // Undo last move
 
 Search and replace in all files:
 
-- `Game Template` → `Your Game Name`
-- `GameTemplate` → `YourGameName`
-- `game-template` → `your-game-name`
+- `Naishi` → `Your Game Name`
+- `Naishi` → `YourGameName`
+- `naishi` → `your-game-name`
 
 ## Deployment
 
@@ -46,7 +46,7 @@ To deploy the React app, install [rclone](https://rclone.org/) then configure:
 ```
 rclone config
 > n
-name> game-template
+name> naishi
 Storage> s3
 provider> Other
 env_auth> false
