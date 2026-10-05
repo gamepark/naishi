@@ -55,7 +55,7 @@ export class NaishiSetup extends MaterialGameSetup<number, MaterialType, Locatio
    * The exchange of one card between the players (step 6) and the shuffle of the Hands (step 7) are made by the first rule.
    */
   setupDevelopmentCardsAndHands(extension: boolean) {
-    const { hands, river } = this.getDevelopmentCardIds(extension)
+    const { hands, river, setAside } = this.getDevelopmentCardIds(extension)
     const pileSize = river.length / riverPiles
     const riverLocations = Array.from({ length: riverPiles }, (_, pile) =>
       Array.from({ length: pileSize }, (_, index) => (index === 0 ? { type: LocationType.River, x: pile } : { type: LocationType.RiverDeck, id: pile }))
@@ -65,6 +65,7 @@ export class NaishiSetup extends MaterialGameSetup<number, MaterialType, Locatio
     )
     this.material(MaterialType.Card).createItems(hands.map((id, index) => ({ id, location: handLocations[index] })))
     this.material(MaterialType.Card).createItems(river.map((id, index) => ({ id, location: riverLocations[index] })))
+    this.material(MaterialType.Card).createItems(setAside.map((id, x) => ({ id, location: { type: LocationType.SetAside, x } })))
     // Shuffling keeps the locations in place and swaps the cards between them, which is dealing the shuffled cards
     this.material(MaterialType.Card)
       .location((location) => location.type === LocationType.River || location.type === LocationType.RiverDeck)
@@ -81,20 +82,22 @@ export class NaishiSetup extends MaterialGameSetup<number, MaterialType, Locatio
    * Extension: 3 random Legends each replace one copy of the base character they are named after, and 5 random Travellers
    * are added, for 39 cards. The Legends and the Travellers are added to the River only, after the Hands are dealt: there can be none in the Hands
    * at the beginning of the game. The 4 dealt to the players leave 5 piles of 7 cards.
+   * The 3 base cards that the Legends replace are not played: they are set aside, face up.
    */
-  getDevelopmentCardIds(extension: boolean): { hands: CardId[]; river: CardId[] } {
+  getDevelopmentCardIds(extension: boolean): { hands: CardId[]; river: CardId[]; setAside: CardId[] } {
     const base = developmentCopies.flatMap(([id, copies]) => Array.from({ length: copies }, () => id))
     const added: CardId[] = []
+    const setAside: CardId[] = []
     if (extension) {
       for (const legend of sampleSize(legends, 3)) {
-        base.splice(base.indexOf(legendReplaces[legend]!), 1)
+        setAside.push(...base.splice(base.indexOf(legendReplaces[legend]!), 1))
         added.push(legend)
       }
       added.push(...sampleSize(travellers, 5))
     }
     const shuffled = shuffle(base)
     const hands = shuffled.slice(0, developmentCardsInHand * this.players.length)
-    return { hands, river: [...shuffled.slice(hands.length), ...added] }
+    return { hands, river: [...shuffled.slice(hands.length), ...added], setAside }
   }
 
   /** Legends & Travellers: the Ryokan starts out of play, on its 4 points side, until a Traveller enters a territory */

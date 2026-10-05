@@ -23,6 +23,10 @@ export enum LocationType {
   FirstPlayerSpot,
   /** Legends & Travellers: the Ryokan card, out of play while nobody owns it (no player), or beside the territory of its owner */
   RyokanSpot,
+  /** Legends & Travellers: the base cards that the Legends replace, out of play (x = order), face up above the Ryokan */
+  SetAside,
+  /** The game mat (static item) */
+  Playmat,
   /** The score block (static item) */
   ScorePad
 }

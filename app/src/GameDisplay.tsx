@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
-import { DevToolsHub, GameTable, GameTableNavigation } from '@gamepark/react-game'
-import { tableBounds } from './locators/TableLayout'
+import { NaishiRules } from '@gamepark/naishi/NaishiRules'
+import { DevToolsHub, GameTable, GameTableNavigation, usePlayerId, useRules } from '@gamepark/react-game'
+import { getTableLayout, tableLayoutOf } from './locators/TableLayout'
 import { FinalTurnBanner } from './panels/FinalTurnBanner'
 import { TravellerChoicePanel } from './panels/TravellerChoicePanel'
 import { TutorialFreePlay } from './tutorial/TutorialFreePlay'
@@ -8,6 +9,10 @@ import { TutorialUnzoom } from './tutorial/TutorialUnzoom'
 import { PlayerPanels } from './panels/PlayerPanels'
 
 export function GameDisplay() {
+  const rules = useRules<NaishiRules>()
+  const player = usePlayerId<number>()
+  // The size of the table depends on the game mat
+  const { tableBounds } = rules ? tableLayoutOf({ rules, player }) : getTableLayout(false, false)
   const margin = { top: 7, left: 0, right: 0, bottom: 0 }
   return (
     <>

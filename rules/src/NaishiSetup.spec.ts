@@ -41,8 +41,10 @@ describe('Naishi setup', () => {
     for (let i = 0; i < 20; i++) {
       const game = setup(true)
       const material = cards(game)
-      expect(material.length).toBe(55)
-      const development = material.id((id) => id !== CardId.Mountain)
+      // the 3 base cards replaced by the Legends are set aside, face up
+      expect(material.location(LocationType.SetAside).length).toBe(3)
+      expect(material.length).toBe(58)
+      const development = material.location((location) => location.type !== LocationType.SetAside).id((id) => id !== CardId.Mountain)
       expect(development.length).toBe(39)
       const inGame = development.getItems().map((item) => item.id as CardId)
       const legendsInGame = inGame.filter((id) => legends.includes(id))

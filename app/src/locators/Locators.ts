@@ -2,42 +2,28 @@ import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext } from '@gamepark/react-game'
 import { Location } from '@gamepark/rules-api'
-import {
-  columnPitch,
-  courtBoardCenter,
-  courtBoardRotation,
-  courtSpotOffsets,
-  emissaryReserveGap,
-  emissaryReserveX,
-  firstColumnX,
-  firstPlayerCardX,
-  handY,
-  lineY,
-  riverY,
-  rightSideX,
-  rowY,
-  ryokanX,
-  scorePadCenter,
-  turnedCourtSpotOffset
-} from './TableLayout'
+import { courtBoardRotation, emissaryReserveGap, lineY, riverY, rowY, setAsideGap, tableLayoutOf } from './TableLayout'
 import { SwapDropAreaDescription } from './SwapDropAreaDescription'
 
 const riverDeckGap = { x: -0.08, y: -0.2 }
 
 /** A row of 5 cards, one per position: `x` of the location is the position */
 class TerritoryRowLocator extends ListLocator {
-  gap = { x: columnPitch }
-
   generateLocationDescriptionFromDraggedItem(location: Location, context: ItemContext) {
     return new SwapDropAreaDescription(super.generateLocationDescriptionFromDraggedItem(location, context))
   }
 
-  constructor(private row: number) {
+  constructor(private row: 'line' | 'hand') {
     super()
   }
 
+  getGap(_location: Location, context: MaterialContext) {
+    return { x: tableLayoutOf(context).columnPitch }
+  }
+
   getCoordinates(location: Location, context: MaterialContext) {
-    return { x: firstColumnX, y: rowY(this.row, location.player, context) }
+    const layout = tableLayoutOf(context)
+    return { x: layout.firstColumnX, y: rowY(this.row === 'line' ? lineY : layout.handY, location.player, context) }
   }
 }
 
@@ -48,6 +34,7 @@ class TerritoryRowLocator extends ListLocator {
 class RiverLocator extends Locator {
   getCoordinates(location: Location, context: MaterialContext) {
     const { x: gapX, y: gapY } = riverDeckGap
+    const { firstColumnX, columnPitch } = tableLayoutOf(context)
     const below = context.rules.material(MaterialType.Card).location(LocationType.RiverDeck).locationId(location.x).length
     return { x: firstColumnX + location.x! * columnPitch + below * gapX, y: riverY + below * gapY, z: 1 }
   }
@@ -65,7 +52,8 @@ class RiverLocator extends Locator {
 class RiverDeckLocator extends DeckLocator {
   gap = riverDeckGap
 
-  getCoordinates(location: Location) {
+  getCoordinates(location: Location, context: MaterialContext) {
+    const { firstColumnX, columnPitch } = tableLayoutOf(context)
     return { x: firstColumnX + location.id * columnPitch, y: riverY }
   }
 }
@@ -75,27 +63,44 @@ class EmissaryReserveLocator extends ListLocator {
   gap = { y: emissaryReserveGap }
 
   getCoordinates(location: Location, context: MaterialContext) {
+    const { emissaryReserveX, handY } = tableLayoutOf(context)
     return { x: emissaryReserveX, y: rowY((lineY + handY) / 2, location.player, context) - emissaryReserveGap / 2 }
   }
 }
 
-/** Each printed circle of the Imperial Court board: id = CourtAction, x = the spot among the ones of that action */
+/** Each printed circle of the Imperial Court board or of the game mat: id = CourtAction, x = the spot among the ones of that action */
 class CourtSpotLocator extends Locator {
   locationDescription = new DropAreaDescription({ width: 1.9, height: 1.9, borderRadius: 0.95 })
 
-  getCoordinates(location: Location) {
-    const offset = turnedCourtSpotOffset(courtSpotOffsets[location.id as keyof typeof courtSpotOffsets][location.x ?? 0])
-    return { x: courtBoardCenter.x + offset.x, y: courtBoardCenter.y + offset.y, z: 1 }
+  getCoordinates(location: Location, context: MaterialContext) {
+    const { x, y } = tableLayoutOf(context).courtSpot(location.id, location.x ?? 0)
+    return { x, y, z: 1 }
   }
 }
 
 class ScorePadLocator extends Locator {
-  coordinates = { x: scorePadCenter.x, y: scorePadCenter.y }
+  getCoordinates(_location: Location, context: MaterialContext) {
+    return tableLayoutOf(context).scorePadCenter
+  }
 }
 
 class CourtBoardLocator extends Locator {
-  coordinates = { x: courtBoardCenter.x, y: courtBoardCenter.y }
   rotateZ = courtBoardRotation
+
+  getCoordinates(_location: Location, context: MaterialContext) {
+    return tableLayoutOf(context).courtBoardCenter
+  }
+}
+
+/** The game mat: turned half a turn when the player at the bottom is the first player (the flower is at the top of the mat) */
+class PlaymatLocator extends Locator {
+  getCoordinates(_location: Location, context: MaterialContext) {
+    return tableLayoutOf(context).playmatCenter
+  }
+
+  getRotateZ(_location: Location, context: MaterialContext) {
+    return tableLayoutOf(context).side === 1 ? 0 : 180
+  }
 }
 
 /** The card a player gives at the beginning of the game, face down beside the Line of the player who receives it */
@@ -103,13 +108,14 @@ class GiftLocator extends Locator {
   locationDescription = new DropAreaDescription({ width: 6.3, height: 8.8, borderRadius: 0.3 })
 
   getCoordinates(location: Location, context: MaterialContext) {
-    return { x: rightSideX, y: rowY(lineY, location.player, context) }
+    return { x: tableLayoutOf(context).rightSideX, y: rowY(lineY, location.player, context) }
   }
 }
 
 /** The First player card is beside the Hand of the player who has it */
 class FirstPlayerSpotLocator extends Locator {
   getCoordinates(location: Location, context: MaterialContext) {
+    const { firstPlayerCardX, handY } = tableLayoutOf(context)
     return { x: firstPlayerCardX, y: rowY(handY, location.player, context) }
   }
 }
@@ -117,29 +123,45 @@ class FirstPlayerSpotLocator extends Locator {
 /** The Ryokan is beside the discard pile while nobody has it, and beside the Line of the player who has it */
 class RyokanSpotLocator extends Locator {
   getCoordinates(location: Location, context: MaterialContext) {
+    const { ryokanX, rightSideX } = tableLayoutOf(context)
     if (location.player === undefined) return { x: ryokanX, y: riverY }
     return { x: rightSideX, y: rowY(lineY, location.player, context) }
   }
 }
 
+/** The base cards replaced by the Legends, out of play, above the Ryokan */
+class SetAsideLocator extends ListLocator {
+  gap = { y: setAsideGap }
+
+  getCoordinates(_location: Location, context: MaterialContext) {
+    const { ryokanX, setAsideY } = tableLayoutOf(context)
+    return { x: ryokanX, y: setAsideY }
+  }
+}
+
 /** The discard pile, face up, beside the River: the discarded cards are stacked on it */
 class DiscardLocator extends DeckLocator {
-  coordinates = { x: rightSideX, y: riverY }
   gap = { x: -0.04, y: -0.08 }
+
+  getCoordinates(_location: Location, context: MaterialContext) {
+    return { x: tableLayoutOf(context).rightSideX, y: riverY }
+  }
 }
 
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
-  [LocationType.Hand]: new TerritoryRowLocator(handY),
-  [LocationType.Line]: new TerritoryRowLocator(lineY),
-  [LocationType.FinalHand]: new TerritoryRowLocator(handY),
+  [LocationType.Hand]: new TerritoryRowLocator('hand'),
+  [LocationType.Line]: new TerritoryRowLocator('line'),
+  [LocationType.FinalHand]: new TerritoryRowLocator('hand'),
   [LocationType.River]: new RiverLocator(),
   [LocationType.RiverDeck]: new RiverDeckLocator(),
   [LocationType.Gift]: new GiftLocator(),
   [LocationType.Discard]: new DiscardLocator(),
   [LocationType.EmissaryReserve]: new EmissaryReserveLocator(),
   [LocationType.CourtBoard]: new CourtBoardLocator(),
+  [LocationType.Playmat]: new PlaymatLocator(),
   [LocationType.ScorePad]: new ScorePadLocator(),
   [LocationType.CourtSpot]: new CourtSpotLocator(),
   [LocationType.FirstPlayerSpot]: new FirstPlayerSpotLocator(),
-  [LocationType.RyokanSpot]: new RyokanSpotLocator()
+  [LocationType.RyokanSpot]: new RyokanSpotLocator(),
+  [LocationType.SetAside]: new SetAsideLocator()
 }

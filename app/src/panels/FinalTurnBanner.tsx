@@ -1,11 +1,12 @@
 import { css } from '@emotion/react'
 import { NaishiRules } from '@gamepark/naishi/NaishiRules'
 import { Memory } from '@gamepark/naishi/rules/Memory'
+import { RuleId } from '@gamepark/naishi/rules/RuleId'
 import { usePlayerName, useRules } from '@gamepark/react-game'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
-/** Once the end of the game is triggered, everybody sees it until the game is over: the player who plays the last turn is named */
+/** Once the end of the game is triggered, everybody sees it until the last turn is played: the player who plays it is named */
 export const FinalTurnBanner = () => {
   const { t } = useTranslation()
   const rules = useRules<NaishiRules>()
@@ -13,6 +14,8 @@ export const FinalTurnBanner = () => {
   const name = usePlayerName(finalPlayer)
   const root = document.getElementById('root')
   if (!root || rules === undefined || rules.game.rule === undefined || finalPlayer === undefined) return null
+  // The last turn is played: the points are counted
+  if (rules.game.rule.id === RuleId.EndOfGame || rules.game.rule.id === RuleId.ChooseNinjaCopy) return null
   return createPortal(<div css={bannerCss}>{t('banner.final-turn', { player: name })}</div>, root)
 }
 

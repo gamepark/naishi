@@ -209,5 +209,7 @@
   "tutorial.21": "L’adversaire joue son tour et développe une carte.",
   "tutorial.22": "Utilisez <b>Rappeler mes émissaires</b>, pour rappeler vos émissaires, mais cela vous prendra tout votre tour. Celui du Décret ne reviendra pas.",
   "tutorial.23": "Vous savez l’essentiel. <b>À vous de jouer librement</b> : développez votre territoire comme vous voulez. Le tutoriel reprend quand une pile de la Rivière sera épuisée.",
-  "help.pts": "{n, plural, one {# point} other {# points}}"
+  "help.pts": "{n, plural, one {# point} other {# points}}",
+  "help.where.setAside.name": "Cartes non jouées",
+  "help.where.setAside": "Avec l’extension, chaque Légende remplace la carte de base du même personnage. Ces 3 cartes de base ne sont pas jouées : elles sont mises de côté, au-dessus du Ryokan."
 }

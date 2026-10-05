@@ -2,6 +2,7 @@ import { CardId } from '@gamepark/naishi/material/CardId'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { ChooseNinjaCopyData, CustomMoveType, SwapCardsData } from '@gamepark/naishi/rules/CustomMoveType'
 import { Memory } from '@gamepark/naishi/rules/Memory'
+import { RuleId } from '@gamepark/naishi/rules/RuleId'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { isCustomMoveType, isMoveItemType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '@gamepark/naishi/material/LocationType'
@@ -58,6 +59,17 @@ class NaishiCardDescription extends CardDescription {
       return [context.rules.material(MaterialType.Card).getItem(other).location]
     }
     return super.getMoveDropLocations(context, move)
+  }
+
+  /** The Ninja whose copy is being chosen is highlighted */
+  highlight(item: MaterialItem, context: ItemContext) {
+    if (context.rules.game.rule?.id === RuleId.ChooseNinjaCopy && context.player !== undefined) {
+      const choosing = context.rules
+        .getLegalMoves(context.player)
+        .some((move) => isCustomMoveType(CustomMoveType.ChooseNinjaCopy)(move) && (move.data as ChooseNinjaCopyData).ninja === context.index)
+      if (choosing) return true
+    }
+    return super.highlight(item, context)
   }
 
   /** A button on the card for the choices of the players: the card given at the beginning of the game, the character a Ninja copies */

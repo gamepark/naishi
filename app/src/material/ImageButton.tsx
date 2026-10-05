@@ -9,6 +9,9 @@ type ImageButtonProps = {
   label: ReactNode
   angle?: number
   radius?: number
+  /** Position from the center of the item, in cm (instead of angle and radius) */
+  x?: number
+  y?: number
   /** Width of the button, in em. The height follows the ratio of the image (width / height) when it is not round. */
   width?: number
   ratio?: number
@@ -23,11 +26,13 @@ type ImageButtonProps = {
 )
 
 /** A button that is an image, or an image in a round, with its text under it */
-export const ImageButton = ({ move, image, label, angle = 0, radius = 0, width = 3, ratio = 1, round, padding = 0, borderColor }: ImageButtonProps) => (
+export const ImageButton = ({ move, image, label, angle = 0, radius = 0, x, y, width = 3, ratio = 1, round, padding = 0, borderColor }: ImageButtonProps) => (
   <ItemMenuButton
     move={move}
     angle={angle}
     radius={radius}
+    x={x}
+    y={y}
     style={{
       width: `${width}em`,
       height: `${round ? width : width / ratio}em`,

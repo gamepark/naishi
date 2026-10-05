@@ -1,6 +1,6 @@
 import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { CustomMoveType } from '@gamepark/naishi/rules/CustomMoveType'
-import { BoardDescription, ItemContext } from '@gamepark/react-game'
+import { BoardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { isCustomMoveType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 import CourtBoard from '../images/boards/board.png'
@@ -18,6 +18,11 @@ class CourtBoardDescription extends BoardDescription {
   // The image has its own shape: no rectangular shadow around it
   transparency = true
   help = CourtBoardHelp
+
+  /** With the game mat, the board is not shown */
+  getStaticItems(context: MaterialContext) {
+    return context.rules.game.options?.playmat === true ? [] : super.getStaticItems(context)
+  }
 
   /** A button under the board to recall the Emissaries: the symbol of the player, with the arrow pointing down to their reserve */
   getItemMenu(_item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {

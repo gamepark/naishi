@@ -394,6 +394,12 @@ const PlaceNote = ({ type }: { type?: LocationType }) => {
           <P k="help.where.discard" />
         </Section>
       )
+    case LocationType.SetAside:
+      return (
+        <Section title="help.where.setAside.name">
+          <P k="help.where.setAside" />
+        </Section>
+      )
     case LocationType.Line:
     case LocationType.Hand:
     case LocationType.FinalHand:
