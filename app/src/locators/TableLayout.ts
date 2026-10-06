@@ -123,7 +123,9 @@ export function getTableLayout(playmat: boolean) {
   /** First player card: 57.5 × 82.4 mm plus the shadow margin, beside the Hand of the player who has it, on the side of the Imperial Court board (further than the Emissaries) */
   const firstPlayerCardX = territoryLeftEdge - 2.9 - 3.1
   /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
-  const rightSideX = territoryRightEdge + 1 + 3.1
+  const rightSideBaseX = territoryRightEdge + 1 + 3.1
+  // With the mat, they are moved to the right of its edge, so that they are not on the image
+  const rightSideX = playmat ? Math.max(rightSideBaseX, playmatCenter.x + playmatSize.width / 2 + 0.5 + cardWidth / 2) : rightSideBaseX
   /** Ryokan: off-play spot, beside the discard pile */
   const ryokanX = rightSideX + cardWidth + columnGap
   /** A line under the block is left for the points of the Ryokan */
