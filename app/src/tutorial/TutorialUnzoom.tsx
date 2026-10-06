@@ -1,7 +1,7 @@
 import { NaishiRules } from '@gamepark/naishi/NaishiRules'
 import { useFocusContext, useRules } from '@gamepark/react-game'
 import { useEffect } from 'react'
-import { naishiTutorial } from './NaishiTutorial'
+import { isUnzoomedWhenClosed, naishiTutorial } from './NaishiTutorial'
 
 /**
  * The framework keeps the zoom of the previous step when a step has no focus and the player has to move.
@@ -13,8 +13,10 @@ export const TutorialUnzoom = () => {
   const step = rules?.game.tutorial?.step
   const stepDefinition = step === undefined ? undefined : naishiTutorial.steps[step]
   const unzoom = stepDefinition !== undefined && stepDefinition.popup !== undefined && stepDefinition.focus === undefined
+  // Some steps show the whole table again when the player closes the popup, before they play
+  const closed = !!rules?.game.tutorial?.popupClosed && isUnzoomedWhenClosed(stepDefinition)
   useEffect(() => {
-    if (unzoom) setFocus(undefined, true)
-  }, [step, unzoom])
+    if (unzoom || closed) setFocus(undefined, true)
+  }, [step, unzoom, closed])
   return null
 }

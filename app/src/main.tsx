@@ -12,9 +12,10 @@ import { Material } from './material/Material'
 import { NaishiScoring } from './scoring/NaishiScoring'
 import { naishiTutorial } from './tutorial/NaishiTutorial'
 
-/** The popup of the tutorial is at the right of the screen, so that it does not cover what it shows (the zoom of the tutorial leaves room for it) */
+/** The popup of the tutorial is at the right of an element of the table: PopupAnchor gives the position of the popup in 2 CSS variables */
 const tutorialPopupCss = css`
-  left: calc(50vw - 50% - 2vh);
+  left: calc(var(--tutorial-left, 50vw) - (100vw - 100%) / 2);
+  top: calc(var(--tutorial-middle, 50vh) - 50vh);
   max-width: 96vw;
 `
 
