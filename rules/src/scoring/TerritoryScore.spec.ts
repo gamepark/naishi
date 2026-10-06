@@ -130,6 +130,14 @@ describe('Legends & Travellers', () => {
     expect(scoreTerritory(grid([LR, A, A, M, M], [M, M, M, M, M])).byType[O]).toBeUndefined()
   })
 
+  it('Legendary Ronin: a Legend and the base cards of the same character are identical (same icon)', () => {
+    const { LegendAdvisor, LegendMonk, Advisor, Torii, Monk } = CardId
+    expect(scoreTerritory(grid([LR, LegendAdvisor, Advisor, Advisor, M], [M, M, M, M, M])).byType[O]).toBe(8)
+    // the Legendary Monk has the icon of a Torii: with 2 Torii, it makes a series of 3
+    expect(scoreTerritory(grid([LR, LegendMonk, Torii, Torii, M], [M, M, M, M, M])).byType[O]).toBe(8)
+    expect(scoreTerritory(grid([LR, LegendMonk, Monk, Monk, M], [M, M, M, M, M])).byType[O]).toBe(8)
+  })
+
   it('Legendary Ninja: copies a character of the opponent, and counts as one more type for the Ronin', () => {
     const score = scoreTerritory(grid([O, N, A, F, S], [T, K, R, { id: LX, copy: H }, M]))
     expect(score.byType[O]).toBe(15) // 8 types + the Horseman copied
