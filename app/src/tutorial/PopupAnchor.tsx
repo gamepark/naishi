@@ -12,14 +12,19 @@ export const popupWidth = 60
  * the position is read on the table at every frame and given to the theme of the dialog (see main.tsx) with 2 CSS variables.
  * The popup stays inside the screen. It renders nothing: it is part of the text of the popup.
  */
-export const PopupAnchor = ({ anchor }: { anchor: PopupAnchorPosition }) => {
+export const PopupAnchor = ({ anchor }: { anchor: PopupAnchorPosition | 'center' }) => {
   const marker = useRef<HTMLSpanElement>(null)
   useLayoutEffect(() => {
     const { tableBounds: bounds } = getTableLayout(false)
     let frame = 0
     const place = () => {
       const table = document.querySelector('.react-transform-component')?.firstElementChild
-      if (table) {
+      if (anchor === 'center') {
+        // In the middle of the screen
+        const width = popupWidth * parseFloat(getComputedStyle(document.body).fontSize)
+        document.documentElement.style.setProperty('--tutorial-left', `${(window.innerWidth - width) / 2}px`)
+        document.documentElement.style.setProperty('--tutorial-middle', `${window.innerHeight / 2}px`)
+      } else if (table) {
         const rect = table.getBoundingClientRect()
         const pxPerCm = rect.width / (bounds.xMax - bounds.xMin)
         const em = parseFloat(getComputedStyle(document.body).fontSize)
@@ -36,6 +41,6 @@ export const PopupAnchor = ({ anchor }: { anchor: PopupAnchorPosition }) => {
     }
     place()
     return () => cancelAnimationFrame(frame)
-  }, [anchor.x, anchor.y])
+  }, [anchor === 'center' ? 'center' : anchor.x, anchor === 'center' ? 0 : anchor.y])
   return <span ref={marker} />
 }

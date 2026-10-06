@@ -16,20 +16,6 @@ import { PopupAnchor, PopupAnchorPosition, popupWidth } from './PopupAnchor'
 type Game = MaterialGame<number, MaterialType, LocationType>
 type Step = TutorialStep<number, MaterialType, LocationType>
 
-/** The opponent of the tutorial: a lady of the court, in red, with her hair in a bun */
-const naishiAvatar = {
-  topType: 'LongHairBun',
-  accessoriesType: 'Blank',
-  hairColor: 'Black',
-  facialHairType: 'Blank',
-  clotheType: 'ShirtCrewNeck',
-  clotheColor: 'Red',
-  eyeType: 'Default',
-  eyebrowType: 'Default',
-  mouthType: 'Smile',
-  skinColor: 'Light'
-}
-
 const me = 1
 const opponent = 2
 
@@ -78,17 +64,17 @@ const shown = (width: number, height: number, step: Step, panels = false): Step 
     right = popupWidth / scale + 1.5
     left = panels || height * scale > 55 ? panelsVh / scale : 0
   }
-  const margin = { right: Math.ceil(right), left: Math.ceil(left) }
+  const margin = { top: 1, bottom: 1, right: Math.ceil(right), left: Math.ceil(left) }
   return { ...step, focus: (game, context) => ({ ...focus(game, context), margin }) }
 }
 
-/** A focus that highlights the elements without zooming: the whole table stays on the screen */
+/** A focus that highlights the elements without zooming: a margin that is too big for any zoom leaves the whole table on the screen */
 const highlighted =
   (focus: NonNullable<Step['focus']>): Step['focus'] =>
-  (game, context) => ({ ...focus(game, context), scale: 1 })
+  (game, context) => ({ ...focus(game, context), margin: { top: 200, right: 200, bottom: 200, left: 200 } })
 
 /** `anchor`: the popup is at the right of this element. `image`: shown at the right of the text */
-const popup = (key: string, anchor: PopupAnchorPosition, image?: ReactNode): Step['popup'] => ({
+const popup = (key: string, anchor: PopupAnchorPosition | 'center', image?: ReactNode): Step['popup'] => ({
   size: { width: popupWidth },
   text: () => (
     <>
@@ -113,6 +99,8 @@ const layout = getTableLayout(false)
 const halfCard = cardWidth / 2
 /** At the right of the card on the left of the River */
 const leftOfRiver: PopupAnchorPosition = { x: layout.firstColumnX + halfCard, y: riverY }
+/** At the right of the whole River */
+const rightOfRiver: PopupAnchorPosition = { x: -layout.firstColumnX + halfCard, y: riverY }
 /** At the right of the middle card of a row (the Fortress, the Naishi) */
 const rightOfMiddleCard = (y: number): PopupAnchorPosition => ({ x: halfCard, y })
 /** At the right of the territory of the player: the Line and the Hand, or the Hand only */
@@ -167,7 +155,7 @@ const isEndTurn = (move: MaterialMove) => isCustomMoveType(CustomMoveType.EndTur
 export class NaishiTutorial extends MaterialTutorial<number, MaterialType, LocationType> {
   options: NaishiOptions = { players: 2 }
   setup = new NaishiTutorialSetup()
-  players = [{ id: me }, { id: opponent, name: 'Koshikibu no Naishi', avatar: naishiAvatar }]
+  players = [{ id: me }, { id: opponent, name: 'Koshikibu no Naishi' }]
 
   cards(game: Game) {
     return this.material(game, MaterialType.Card)
@@ -183,12 +171,12 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     }, true),
     // 3
     {
-      popup: popup('tutorial.3', leftOfRiver),
+      popup: popup('tutorial.3', rightOfRiver),
       focus: highlighted((game) => ({ materials: [this.cards(game).location((l) => l.type === LocationType.River || l.type === LocationType.RiverDeck)] }))
     },
     // 4: give a card
     {
-      popup: popup('tutorial.4', leftOfRiver),
+      popup: popup('tutorial.4', rightOfRiver),
       move: { player: me, filter: isGiftOf(me) }
     },
     // The opponent gives a card too
@@ -198,17 +186,25 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
       popup: popup('tutorial.5', rightOfHand),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Hand).player(me)] })
     }, true),
-    // 6: a first normal move: the Sentinel of the pile 2 goes to the position 2
-    {
-      popup: popup('tutorial.6', leftOfRiver),
-      focus: highlighted((game) => ({
-        materials: [
-          this.cards(game).location(LocationType.River).filter((item) => item.location.x === 1),
-          this.cards(game).player(me).location((l) => l.type === LocationType.Line || l.type === LocationType.Hand).filter((item) => item.location.x === 1)
-        ]
-      })),
-      move: { player: me, filter: (move, game) => isDevelop(riverIndex(game, 1), me, 1, true)(move) }
-    },
+    // 6: a first normal move: the Sentinel of the pile 2 goes to the position 2. The zoom shows the 3 cards that can be played (the Sentinel, the Line and the Hand
+    // at the position 2), the popup is at the right of them, the table is shown whole when the popup is closed
+    thenUnzoomed(
+      shown(
+        6.3,
+        28.4,
+        {
+          popup: popup('tutorial.6', { x: layout.firstColumnX + layout.columnPitch + halfCard, y: (riverY + layout.handY) / 2 }),
+          focus: (game) => ({
+            materials: [
+              this.cards(game).location(LocationType.River).filter((item) => item.location.x === 1),
+              this.cards(game).player(me).location((l) => l.type === LocationType.Line || l.type === LocationType.Hand).filter((item) => item.location.x === 1)
+            ]
+          }),
+          move: { player: me, filter: (move, game) => isDevelop(riverIndex(game, 1), me, 1, true)(move) }
+        },
+        true
+      )
+    ),
     // 7: end the turn
     {
       popup: popup('tutorial.7', leftOfRiver),
@@ -226,7 +222,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     }),
     // 10: the Fortress goes to the middle of the Line, the table is shown whole
     {
-      popup: popup('tutorial.10', leftOfRiver),
+      popup: popup('tutorial.10', rightOfMiddleCard(riverY)),
       focus: highlighted((game) => ({
         materials: [this.cards(game).location(LocationType.River).id(CardId.Fortress), this.cards(game).location(LocationType.Line).player(me).filter((item) => item.location.x === 2)]
       })),
@@ -251,11 +247,8 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
       popup: popup('tutorial.13', rightOfSpots(CourtAction.DiscardRiver, 2)),
       focus: () => ({ locations: [0, 1].map((x) => ({ type: LocationType.CourtSpot, id: CourtAction.DiscardRiver, x })) })
     }),
-    // 14: the Fortress is on an edge, the table is shown whole
-    {
-      popup: popup('tutorial.14', leftOfRiver),
-      focus: highlighted((game) => ({ materials: [this.cards(game).location(LocationType.Line).player(me).filter((item) => item.location.x === 0)] }))
-    },
+    // 14: the Fortress is on an edge: nothing is highlighted, the table is shown whole
+    { popup: popup('tutorial.14', leftOfRiver) },
     // 15: the Naishi is revealed, the popup is at the right of it
     shown(6.3, 8.8, {
       popup: popup('tutorial.15', rightOfMiddleCard(riverY)),
@@ -271,7 +264,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 18: zoom on the circle of the Decree only, shown whole again when the popup is closed
     thenUnzoomed(
       shown(3, 3, {
-        popup: popup('tutorial.18', rightOfSpots(CourtAction.Decree, 1)),
+        popup: popup('tutorial.18', rightOfCourt),
         focus: () => ({ locations: [{ type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }] }),
         move: { player: me, filter: isEmissaryOn(CourtAction.Decree) }
       })
@@ -301,7 +294,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
       move: { player: me, filter: (move) => isCustomMoveType(CustomMoveType.RecallEmissaries)(move) }
     },
     // 23: the end of the scenario, the game goes on freely
-    { popup: popup('tutorial.23', leftOfRiver) }
+    { popup: popup('tutorial.23', 'center') }
   ]
 }
 

@@ -61,6 +61,15 @@ class NaishiCardDescription extends CardDescription {
     return super.getMoveDropLocations(context, move)
   }
 
+  /** In the discard pile, only the card on top can be clicked: the others are under it */
+  displayHelp(item: MaterialItem, context: ItemContext) {
+    if (item.location.type === LocationType.Discard) {
+      const top = Math.max(...context.rules.material(MaterialType.Card).location(LocationType.Discard).getItems().map((discarded) => discarded.location.x ?? 0))
+      if ((item.location.x ?? 0) !== top) return undefined
+    }
+    return super.displayHelp(item, context)
+  }
+
   /** The Ninja whose copy is being chosen is highlighted */
   highlight(item: MaterialItem, context: ItemContext) {
     if (context.rules.game.rule?.id === RuleId.ChooseNinjaCopy && context.player !== undefined) {

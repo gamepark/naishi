@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
-import { StyledPlayerPanel, usePlayers } from '@gamepark/react-game'
+import { StyledPlayerPanel, usePlayers, useRules } from '@gamepark/react-game'
 import { createPortal } from 'react-dom'
+import NaishiFace from '../images/avatars/koshikibu-no-naishi.png'
 import BlackEmissary from '../images/tokens/black.png'
 import WhiteEmissary from '../images/tokens/white.png'
 
@@ -10,6 +11,7 @@ import WhiteEmissary from '../images/tokens/white.png'
  */
 export const PlayerPanels = () => {
   const players = usePlayers<number>({ sortFromMe: true })
+  const tutorial = useRules()?.game.tutorial !== undefined
   const root = document.getElementById('root')
   if (!root) {
     return null
@@ -18,7 +20,7 @@ export const PlayerPanels = () => {
   return createPortal(
     <>
       {players.map((player, index) => (
-        <StyledPlayerPanel key={player.id} player={player} css={[panelPosition(index), player.id === 1 ? blackPanel : whitePanel]} activeRing />
+        <StyledPlayerPanel key={player.id} player={player} css={[panelPosition(index), player.id === 1 ? blackPanel : whitePanel, tutorial && player.id === 2 && naishiAvatar]} activeRing />
       ))}
     </>,
     root
@@ -71,3 +73,14 @@ const whitePanel = [
   `,
   token(WhiteEmissary)
 ]
+
+/** The opponent of the tutorial is « Koshikibu no Naishi »: the face of the Naishi card instead of the drawn avatar */
+const naishiAvatar = css`
+  > div:first-of-type {
+    background: url(${NaishiFace}) center / cover;
+
+    svg {
+      visibility: hidden;
+    }
+  }
+`
