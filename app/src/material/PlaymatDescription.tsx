@@ -9,13 +9,14 @@ import { playmatSize } from '../locators/TableLayout'
 import { ImageButton, symbolButtonRatio } from './ImageButton'
 import { symbolImage } from './symbolImages'
 
-/** Where the button to recall the Emissaries is, from the center of the mat: right of the scroll of the Imperial Court */
-const recallButton = { x: -15.5, y: 0.5 }
+/** Where the button to recall the Emissaries is, from the center of the mat (cm): at the bottom left, outside of the mat */
+const recallButton = { x: -25.5, y: 19.6 }
 
 /** The game mat (option `playmat`): it replaces the Imperial Court board, and is under the River and the Lines */
 class PlaymatDescription extends BoardDescription {
   width = playmatSize.width
   height = playmatSize.height
+  borderRadius = 1.5
   image = Playmat
   menuAlwaysVisible = true
   help = CourtBoardHelp
@@ -34,6 +35,7 @@ class PlaymatDescription extends BoardDescription {
         image={symbolImage(context.player, 'down')}
         ratio={symbolButtonRatio}
         width={3}
+        labelWidth={6}
         label={<Trans defaults="button.recall" />}
         x={recallButton.x}
         y={recallButton.y}

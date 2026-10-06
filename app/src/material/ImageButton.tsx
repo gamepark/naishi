@@ -9,6 +9,8 @@ type ImageButtonProps = {
   label: ReactNode
   angle?: number
   radius?: number
+  /** The text is on several lines in this width (em), instead of one line */
+  labelWidth?: number
   /** Position from the center of the item, in cm (instead of angle and radius) */
   x?: number
   y?: number
@@ -26,7 +28,7 @@ type ImageButtonProps = {
 )
 
 /** A button that is an image, or an image in a round, with its text under it */
-export const ImageButton = ({ move, image, label, angle = 0, radius = 0, x, y, width = 3, ratio = 1, round, padding = 0, borderColor }: ImageButtonProps) => (
+export const ImageButton = ({ move, image, label, angle = 0, radius = 0, x, y, labelWidth, width = 3, ratio = 1, round, padding = 0, borderColor }: ImageButtonProps) => (
   <ItemMenuButton
     move={move}
     angle={angle}
@@ -57,7 +59,11 @@ export const ImageButton = ({ move, image, label, angle = 0, radius = 0, x, y, w
         transform: 'translateX(-50%)',
         marginTop: '0.2em',
         padding: '0 0.5em',
-        whiteSpace: 'nowrap',
+        whiteSpace: labelWidth === undefined ? 'nowrap' : 'normal',
+        width: labelWidth === undefined ? undefined : `${labelWidth}em`,
+        boxSizing: 'border-box',
+        textAlign: 'center',
+        lineHeight: 1.2,
         background: 'rgba(0, 0, 0, 0.6)',
         color: 'white',
         borderRadius: '0.3em'
