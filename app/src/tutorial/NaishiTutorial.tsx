@@ -199,8 +199,11 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 15
     {
       popup: popup('tutorial.18'),
-      // The Decree spot is highlighted, without zooming (scale 1 = the whole table)
-      focus: () => ({ locations: [{ type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }], scale: 1 }),
+      // The zoom shows the Decree spot and the Emissary of the player that goes there
+      focus: (game) => ({
+        materials: [this.material(game, MaterialType.Emissary).location(LocationType.EmissaryReserve).player(me)],
+        locations: [{ type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }]
+      }),
       move: { player: me, filter: isEmissaryOn(CourtAction.Decree) }
     },
     // 16
