@@ -10,7 +10,7 @@ import { usePlayerId, useRules } from '@gamepark/react-game'
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Trans, useTranslation } from 'react-i18next'
-import { naishiTutorial, TutorialKey } from './NaishiTutorial'
+import { naishiTutorial } from './NaishiTutorial'
 
 /**
  * After the scripted part of the tutorial, the game goes on freely. These popups come when the situation they explain happens:
@@ -46,7 +46,6 @@ export const TutorialFreePlay = () => {
   return createPortal(
     <div css={popupCss}>
       <p css={textCss}>
-        <TutorialKey name={`tutorial.${key}`} />
         <Trans i18nKey={`tutorial.${key}`} components={{ b: <strong />, i: <em /> }} />
       </p>
       <button css={buttonCss} onClick={() => setSeen([...seen, key])}>

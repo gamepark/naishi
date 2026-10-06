@@ -22,10 +22,6 @@ const opponent = 2
 /** The pile of the Fortress, in the middle of the River */
 const centerPile = 2
 
-/** In development, the key of the text is shown before it (« [tutorial.12] »), to point at the exact screen when asking for a change */
-export const TutorialKey = ({ name }: { name: string }) =>
-  process.env.NODE_ENV === 'development' ? <small style={{ opacity: 0.6, fontSize: '0.6em' }}>[{name}] </small> : null
-
 /** The scoring of a card is in the bottom quarter of the card: only this part is shown, big enough to read the icons */
 const CardScoring = ({ id }: { id: CardId }) => (
   <div
@@ -80,7 +76,6 @@ const popup = (key: string, anchor: PopupAnchorPosition | 'center', image?: Reac
     <>
       <PopupAnchor anchor={anchor} />
       {image}
-      <TutorialKey name={key} />
       <Trans i18nKey={key} components={{ b: <strong />, i: <em /> }} />
     </>
   )
