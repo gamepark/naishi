@@ -43,3 +43,8 @@ tmpclaude-*
 # Publisher source PDFs (large, not versioned)
 /_sources-images/*.pdf
 /_sources-images/Tapis-de-jeu-*.jpg
+
+# Working notes (not versioned)
+ROADMAP.md
+Roadmap.md
+QUESTIONS.md
