@@ -2,6 +2,7 @@ import { css } from '@emotion/react'
 import { CardId } from '@gamepark/naishi/material/CardId'
 import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialHelpProps, usePlayerId, useRules } from '@gamepark/react-game'
+import { MaterialItem } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import BlackEmissary from '../images/tokens/black.png'
@@ -413,8 +414,19 @@ const PlaceNote = ({ type }: { type?: LocationType }) => {
   }
 }
 
+/** The card on top of the discard pile: the last discarded one, the highest x */
+const topOfDiscard = (rules: NaishiRules) =>
+  rules
+    .material(MaterialType.Card)
+    .location(LocationType.Discard)
+    .getItems()
+    .reduce<MaterialItem | undefined>((top, item) => (top === undefined || (item.location.x ?? 0) > (top.location.x ?? 0) ? item : top), undefined)
+
 /** The help of a card: what it scores (or does), then where it is. A card nobody can see is explained by its place. */
-export const CardHelp = ({ item }: MaterialHelpProps) => {
+export const CardHelp = ({ item: clicked }: MaterialHelpProps) => {
+  const rules = useRules<NaishiRules>()
+  // Only the card on top of the discard pile can be seen: the help of any card of the pile is the one of the card on top
+  const item = clicked.location?.type === LocationType.Discard && rules ? topOfDiscard(rules) ?? clicked : clicked
   const id = item.id as CardId | undefined
   if (id === undefined) {
     const type = item.location?.type

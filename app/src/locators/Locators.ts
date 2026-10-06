@@ -1,6 +1,6 @@
 import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
-import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext } from '@gamepark/react-game'
+import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
 import { Location } from '@gamepark/rules-api'
 import { courtBoardRotation, emissaryReserveGap, lineY, riverY, rowY, setAsideGap, tableLayoutOf } from './TableLayout'
 import { SwapDropAreaDescription } from './SwapDropAreaDescription'
@@ -135,9 +135,11 @@ class SetAsideLocator extends ListLocator {
   }
 }
 
-/** The discard pile, face up, beside the River: the discarded cards are stacked on it */
-class DiscardLocator extends DeckLocator {
-  gap = { x: -0.04, y: -0.08 }
+/** The discard pile, face up, beside the River: the discarded cards are thrown on it, a little crooked, and only the one on top shows */
+class DiscardLocator extends PileLocator {
+  radius = 0.4
+  maxAngle = 6
+  limit = 15
 
   getCoordinates(_location: Location, context: MaterialContext) {
     return { x: tableLayoutOf(context).rightSideX, y: riverY }

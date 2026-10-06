@@ -14,6 +14,20 @@ import { cardImages } from '../material/cardImages'
 type Game = MaterialGame<number, MaterialType, LocationType>
 type Step = TutorialStep<number, MaterialType, LocationType>
 
+/** The opponent of the tutorial: a lady of the court, in red, with her hair in a bun */
+const naishiAvatar = {
+  topType: 'LongHairBun',
+  accessoriesType: 'Blank',
+  hairColor: 'Black',
+  facialHairType: 'Blank',
+  clotheType: 'ShirtCrewNeck',
+  clotheColor: 'Red',
+  eyeType: 'Default',
+  eyebrowType: 'Default',
+  mouthType: 'Smile',
+  skinColor: 'Light'
+}
+
 const me = 1
 const opponent = 2
 
@@ -107,7 +121,7 @@ const isEndTurn = (move: MaterialMove) => isCustomMoveType(CustomMoveType.EndTur
 export class NaishiTutorial extends MaterialTutorial<number, MaterialType, LocationType> {
   options: NaishiOptions = { players: 2 }
   setup = new NaishiTutorialSetup()
-  players = [{ id: me }, { id: opponent, name: 'Madladif' }]
+  players = [{ id: me }, { id: opponent, name: 'Koshikibu no Naishi', avatar: naishiAvatar }]
 
   cards(game: Game) {
     return this.material(game, MaterialType.Card)

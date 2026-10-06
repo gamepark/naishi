@@ -41,7 +41,9 @@ export class NaishiRules
   // The Hand, the Line and the River are fixed slots (x = position) that must never slide: no strategy there.
   locationsStrategies = {
     [MaterialType.Card]: {
-      [LocationType.RiverDeck]: new PositiveSequenceStrategy()
+      [LocationType.RiverDeck]: new PositiveSequenceStrategy(),
+      // The discard pile: the last card discarded is on top (x = order)
+      [LocationType.Discard]: new PositiveSequenceStrategy()
     },
     // An Emissary sent to the Imperial Court must not make the others of the reserve slide
     [MaterialType.Emissary]: {
