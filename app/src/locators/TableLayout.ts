@@ -120,6 +120,8 @@ export function getTableLayout(playmat: boolean) {
 
   /** Emissaries of a player are beside their territory, between their Line and their Hand */
   const emissaryReserveX = territoryLeftEdge - 1.5
+  /** Distance from the River of the middle of the 2 Emissaries: between the Line and the Hand, or under the mat (outside of it) */
+  const emissaryReserveY = playmat ? playmatSize.height / 2 + 0.5 + emissaryDiameter / 2 + emissaryReserveGap / 2 : (lineY + handY) / 2
   /** First player card: 57.5 × 82.4 mm plus the shadow margin, beside the Hand of the player who has it, on the side of the Imperial Court board (further than the Emissaries) */
   const firstPlayerCardX = territoryLeftEdge - 2.9 - 3.1
   /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
@@ -159,6 +161,7 @@ export function getTableLayout(playmat: boolean) {
     playmatCenter,
     courtSpot,
     emissaryReserveX,
+    emissaryReserveY,
     firstPlayerCardX,
     rightSideX,
     ryokanX,

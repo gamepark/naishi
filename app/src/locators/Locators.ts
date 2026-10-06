@@ -63,8 +63,8 @@ class EmissaryReserveLocator extends ListLocator {
   gap = { y: emissaryReserveGap }
 
   getCoordinates(location: Location, context: MaterialContext) {
-    const { emissaryReserveX, handY } = tableLayoutOf(context)
-    return { x: emissaryReserveX, y: rowY((lineY + handY) / 2, location.player, context) - emissaryReserveGap / 2 }
+    const { emissaryReserveX, emissaryReserveY } = tableLayoutOf(context)
+    return { x: emissaryReserveX, y: rowY(emissaryReserveY, location.player, context) - emissaryReserveGap / 2 }
   }
 }
 
