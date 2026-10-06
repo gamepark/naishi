@@ -41,8 +41,23 @@ const CardScoring = ({ id }: { id: CardId }) => (
   />
 )
 
+/** The popup is at the right of the screen (see the theme in main.tsx), `popupWidth` em wide (1 em = 1% of the height of the screen) */
+const popupWidth = 60
+
+/**
+ * The popup must not cover what it shows: the zoom of the focus of the step keeps room at the right of the elements, for the popup.
+ * `width` and `height` are the size (cm) of the elements that are shown. The room depends on what limits the zoom: the height or the width of the screen (16/10 at least).
+ */
+const shown = (width: number, height: number, step: Step): Step => {
+  const { focus } = step
+  if (!focus) return step
+  const right = Math.ceil(Math.max((popupWidth / 100) * height + 2, (popupWidth / 160 / (1 - popupWidth / 160)) * width + 3))
+  return { ...step, focus: (game, context) => ({ ...focus(game, context), margin: { right } }) }
+}
+
 /** `image`: shown at the right of the text */
 const popup = (key: string, image?: ReactNode): Step['popup'] => ({
+  size: { width: popupWidth },
   text: () => (
     <>
       {image}
@@ -102,15 +117,15 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 1
     { popup: popup('tutorial.1') },
     // 2
-    {
+    shown(33.5, 18.1, {
       popup: popup('tutorial.2'),
       focus: (game) => ({ materials: [this.cards(game).player(me).location((l) => l.type === LocationType.Line || l.type === LocationType.Hand)] })
-    },
+    }),
     // 3
-    {
+    shown(33.5, 10, {
       popup: popup('tutorial.3'),
       focus: (game) => ({ materials: [this.cards(game).location((l) => l.type === LocationType.River || l.type === LocationType.RiverDeck)] })
-    },
+    }),
     // 4: give a card
     {
       popup: popup('tutorial.4'),
@@ -119,12 +134,12 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // The opponent gives a card too
     { move: { player: opponent, filter: isGiftOf(opponent, CardId.Sentinel) } },
     // 5
-    {
+    shown(33.5, 8.8, {
       popup: popup('tutorial.5'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Hand).player(me)] })
-    },
+    }),
     // 6: a first normal move: the Sentinel of the pile 2 goes to the position 2
-    {
+    shown(6.3, 28.4, {
       popup: popup('tutorial.6'),
       focus: (game) => ({
         materials: [
@@ -133,7 +148,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
         ]
       }),
       move: { player: me, filter: (move, game) => isDevelop(riverIndex(game, 1), me, 1, true)(move) }
-    },
+    }),
     // 7: end the turn
     {
       popup: popup('tutorial.7'),
@@ -145,48 +160,48 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 8: a pause to see what the opponent did
     { popup: popup('tutorial.8') },
     // 9
-    {
+    shown(6.3, 8.8, {
       popup: popup('tutorial.9', <CardScoring id={CardId.Fortress} />),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.River).id(CardId.Fortress)] })
-    },
+    }),
     // 10: the Fortress goes to the middle of the Line
-    {
+    shown(6.3, 19.1, {
       popup: popup('tutorial.10'),
       focus: (game) => ({
         materials: [this.cards(game).location(LocationType.River).id(CardId.Fortress), this.cards(game).location(LocationType.Line).player(me).filter((item) => item.location.x === 2)]
       }),
       move: { player: me, filter: (move, game) => isDevelop(riverIndex(game, centerPile), me, 2)(move) }
-    },
+    }),
     // 11
-    {
+    shown(16, 22, {
       popup: popup('tutorial.11'),
       focus: (game) => ({
         materials: [this.material(game, MaterialType.Emissary).location(LocationType.EmissaryReserve).player(me)],
         locations: [0, 1, 2].map((x) => ({ type: LocationType.CourtSpot, id: CourtAction.Swap, x }))
       }),
       move: { player: me, filter: isEmissaryOn(CourtAction.Swap) }
-    },
+    }),
     // 12: swap the Fortress of the middle with the card of the left edge
-    {
+    shown(19.9, 8.8, {
       popup: popup('tutorial.12'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Line).player(me).filter((item) => item.location.x === 2 || item.location.x === 0)] }),
       move: { player: me, filter: (move, game) => isSwap(move, lineIndex(game, me, 2), lineIndex(game, me, 0)) }
-    },
+    }),
     // 13: the other action of the Imperial Court, and the limit of one Emissary per turn
-    {
+    shown(6, 3, {
       popup: popup('tutorial.13'),
       focus: () => ({ locations: [0, 1].map((x) => ({ type: LocationType.CourtSpot, id: CourtAction.DiscardRiver, x })) })
-    },
+    }),
     // 14: the Fortress is on an edge
-    {
+    shown(6.3, 8.8, {
       popup: popup('tutorial.14'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Line).player(me).filter((item) => item.location.x === 0)] })
-    },
+    }),
     // 15: the Naishi is revealed
-    {
+    shown(6.3, 8.8, {
       popup: popup('tutorial.15'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.River).filter((item) => item.location.x === centerPile)] })
-    },
+    }),
     // The opponent takes the Naishi: no text, the pause after it shows what happened
     {
       move: { player: opponent, filter: (move, game) => isDevelop(riverIndex(game, centerPile), opponent, 2)(move) }
@@ -197,7 +212,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
       popup: popup('tutorial.17')
     },
     // 15
-    {
+    shown(12, 18, {
       popup: popup('tutorial.18'),
       // The zoom shows the Decree spot and the Emissary of the player that goes there
       focus: (game) => ({
@@ -205,18 +220,18 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
         locations: [{ type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }]
       }),
       move: { player: me, filter: isEmissaryOn(CourtAction.Decree) }
-    },
+    }),
     // 16
-    {
+    shown(6.3, 29.4, {
       popup: popup('tutorial.19'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Line).filter((item) => item.location.x === 2)] }),
       move: { player: me, filter: (move, game) => isSwap(move, lineIndex(game, me, 2), lineIndex(game, opponent, 2)) }
-    },
+    }),
     // 17
-    {
+    shown(3, 3, {
       popup: popup('tutorial.20'),
       focus: (game) => ({ materials: [this.material(game, MaterialType.Emissary).location(LocationType.CourtSpot).locationId(CourtAction.Decree)] })
-    },
+    }),
     // 18: the opponent develops a card, at random
     {
       popup: popup('tutorial.21'),
