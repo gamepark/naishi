@@ -92,14 +92,10 @@ class CourtBoardLocator extends Locator {
   }
 }
 
-/** The game mat: turned half a turn when the player at the bottom is the first player (the flower is at the top of the mat) */
+/** The game mat */
 class PlaymatLocator extends Locator {
   getCoordinates(_location: Location, context: MaterialContext) {
     return tableLayoutOf(context).playmatCenter
-  }
-
-  getRotateZ(_location: Location, context: MaterialContext) {
-    return tableLayoutOf(context).side === 1 ? 0 : 180
   }
 }
 

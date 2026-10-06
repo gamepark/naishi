@@ -5,7 +5,7 @@ import { isCustomMoveType, MaterialItem, MaterialMove } from '@gamepark/rules-ap
 import { Trans } from 'react-i18next'
 import Playmat from '../images/boards/playmat.jpg'
 import { CourtBoardHelp } from '../help/OtherHelps'
-import { playmatSize, tableLayoutOf } from '../locators/TableLayout'
+import { playmatSize } from '../locators/TableLayout'
 import { ImageButton, symbolButtonRatio } from './ImageButton'
 import { symbolImage } from './symbolImages'
 
@@ -28,7 +28,6 @@ class PlaymatDescription extends BoardDescription {
   getItemMenu(_item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {
     const recall = legalMoves.find(isCustomMoveType(CustomMoveType.RecallEmissaries))
     if (!recall) return null
-    const { side } = tableLayoutOf(context)
     return (
       <ImageButton
         move={recall}
@@ -36,8 +35,8 @@ class PlaymatDescription extends BoardDescription {
         ratio={symbolButtonRatio}
         width={3}
         label={<Trans defaults="button.recall" />}
-        x={side * recallButton.x}
-        y={side * recallButton.y}
+        x={recallButton.x}
+        y={recallButton.y}
       />
     )
   }

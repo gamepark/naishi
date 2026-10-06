@@ -15,8 +15,8 @@ import { CourtAction } from '@gamepark/naishi/material/CourtAction'
  * The Imperial Court board and the First player card are on the left, the discard pile and the Ryokan on the right.
  *
  * With the game mat (option `playmat`), the mat replaces the Imperial Court board and is under the River and the Lines:
- * the columns are the ones printed on the mat, and the Hands are outside of it. The mat shows the flower (first player) at the top and
- * the tomoe at the bottom: when the player at the bottom is the first player, the mat is turned half a turn and the sides of the table are swapped.
+ * the columns are the ones printed on the mat, and the Hands are outside of it. The sides of the table stay the same:
+ * the court and the Emissaries on the left, the discard pile, the Ryokan and the score block on the right.
  */
 export const cardWidth = 6.3
 export const cardHeight = 8.8
@@ -94,13 +94,8 @@ export const setAsideGap = 1.8
 
 export type TableLayout = ReturnType<typeof getTableLayout>
 
-/**
- * @param playmat the game mat replaces the Imperial Court board
- * @param flip with the mat: the player at the bottom is the first player, the mat is turned half a turn
- */
-export function getTableLayout(playmat: boolean, flip: boolean) {
-  /** -1 when the sides of the table are swapped (the court is on the right) */
-  const side = playmat && flip ? -1 : 1
+/** @param playmat the game mat replaces the Imperial Court board */
+export function getTableLayout(playmat: boolean) {
   const columnPitch = playmat ? playmatColumnPitch : cardWidth + columnGap
   /** x of the center of the first column (position 1) */
   const firstColumnX = -2 * columnPitch
@@ -111,29 +106,29 @@ export function getTableLayout(playmat: boolean, flip: boolean) {
   const handY = playmat ? playmatSize.height / 2 + 0.5 + cardHeight / 2 : lineY + rowPitch
 
   const courtBoardCenter = { x: territoryLeftEdge - 1.2 - courtBoardFootprint.width / 2, y: riverY }
-  const playmatCenter = { x: -side * playmatRiverOffsetX, y: riverY }
+  const playmatCenter = { x: -playmatRiverOffsetX, y: riverY }
 
   /** The center of the circle of an action of the Imperial Court */
   const courtSpot = (action: CourtAction, x = 0) => {
     if (playmat) {
       const offset = playmatSpotOffsets[action][x]
-      return { x: playmatCenter.x + side * offset.x, y: riverY + side * offset.y }
+      return { x: playmatCenter.x + offset.x, y: riverY + offset.y }
     }
     const offset = turnedCourtSpotOffset(courtSpotOffsets[action][x])
     return { x: courtBoardCenter.x + offset.x, y: courtBoardCenter.y + offset.y }
   }
 
   /** Emissaries of a player are beside their territory, between their Line and their Hand */
-  const emissaryReserveX = side * (territoryLeftEdge - 1.5)
+  const emissaryReserveX = territoryLeftEdge - 1.5
   /** First player card: 57.5 × 82.4 mm plus the shadow margin, beside the Hand of the player who has it, on the side of the Imperial Court board (further than the Emissaries) */
-  const firstPlayerCardX = side * (territoryLeftEdge - 2.9 - 3.1)
-  /** Opposite to the court: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
-  const rightSideX = side * (territoryRightEdge + 1 + 3.1)
+  const firstPlayerCardX = territoryLeftEdge - 2.9 - 3.1
+  /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
+  const rightSideX = territoryRightEdge + 1 + 3.1
   /** Ryokan: off-play spot, beside the discard pile */
-  const ryokanX = rightSideX + side * (cardWidth + columnGap)
+  const ryokanX = rightSideX + cardWidth + columnGap
   /** A line under the block is left for the points of the Ryokan */
   const scorePadCenter = {
-    x: rightSideX + side * (cardWidth / 2 + 0.5 + scorePadSize.width / 2),
+    x: rightSideX + cardWidth / 2 + 0.5 + scorePadSize.width / 2,
     y: handY + cardHeight / 2 - scorePadSize.height / 2 - 1
   }
   const setAsideY = riverY - rowPitch - 2 * setAsideGap
@@ -155,7 +150,6 @@ export function getTableLayout(playmat: boolean, flip: boolean) {
   const halfHeight = handY + cardHeight / 2 + 0.4
 
   return {
-    side,
     columnPitch,
     firstColumnX,
     handY,
@@ -172,16 +166,9 @@ export function getTableLayout(playmat: boolean, flip: boolean) {
   }
 }
 
-/** The layout of the table for the player who looks at the game (the options of the game tell if the mat is used) */
-export function tableLayoutOf(context: Pick<MaterialContext, 'rules' | 'player'>): TableLayout {
-  const playmat = context.rules.game.options?.playmat === true
-  return getTableLayout(playmat, isBottomPlayerFirst(context))
-}
-
-/** The player at the bottom of the table is the first player: the player looking at the game, or the first player for a spectator */
-function isBottomPlayerFirst(context: Pick<MaterialContext, 'rules' | 'player'>): boolean {
-  const first = context.rules.players[0]
-  return (context.player ?? first) === first
+/** The layout of the table (the options of the game tell if the mat is used) */
+export function tableLayoutOf(context: Pick<MaterialContext, 'rules'>): TableLayout {
+  return getTableLayout(context.rules.game.options?.playmat === true)
 }
 
 /** The player shown at the bottom of the table: the player looking at the game, or the first player for a spectator */
