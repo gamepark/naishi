@@ -7,6 +7,7 @@ import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { CustomMoveType, SwapCardsData } from '@gamepark/naishi/rules/CustomMoveType'
 import { MaterialTutorial, TutorialStep } from '@gamepark/react-game'
 import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { cardImages } from '../material/cardImages'
 
@@ -23,11 +24,28 @@ const centerPile = 2
 export const TutorialKey = ({ name }: { name: string }) =>
   process.env.NODE_ENV === 'development' ? <small style={{ opacity: 0.6, fontSize: '0.6em' }}>[{name}] </small> : null
 
-/** `image`: a picture shown at the right of the text */
-const popup = (key: string, image?: string): Step['popup'] => ({
+/** The scoring of a card is in the bottom quarter of the card: only this part is shown, big enough to read the icons */
+const CardScoring = ({ id }: { id: CardId }) => (
+  <div
+    style={{
+      float: 'right',
+      width: '13em',
+      height: '4.6em',
+      marginLeft: '0.8em',
+      borderRadius: '0.3em',
+      backgroundImage: `url(${cardImages[id]})`,
+      backgroundSize: '100% auto',
+      backgroundPosition: 'bottom',
+      backgroundRepeat: 'no-repeat'
+    }}
+  />
+)
+
+/** `image`: shown at the right of the text */
+const popup = (key: string, image?: ReactNode): Step['popup'] => ({
   text: () => (
     <>
-      {image && <img src={image} alt="" style={{ float: 'right', height: '7em', marginLeft: '0.8em', borderRadius: '0.3em' }} />}
+      {image}
       <TutorialKey name={key} />
       <Trans i18nKey={key} components={{ b: <strong />, i: <em /> }} />
     </>
@@ -128,7 +146,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     { popup: popup('tutorial.8') },
     // 9
     {
-      popup: popup('tutorial.9', cardImages[CardId.Fortress]),
+      popup: popup('tutorial.9', <CardScoring id={CardId.Fortress} />),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.River).id(CardId.Fortress)] })
     },
     // 10: the Fortress goes to the middle of the Line
@@ -169,9 +187,8 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
       popup: popup('tutorial.15'),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.River).filter((item) => item.location.x === centerPile)] })
     },
-    // 14: the opponent takes the Naishi
+    // The opponent takes the Naishi: no text, the pause after it shows what happened
     {
-      popup: popup('tutorial.16'),
       move: { player: opponent, filter: (move, game) => isDevelop(riverIndex(game, centerPile), opponent, 2)(move) }
     },
     { move: { player: opponent, filter: isEndTurn } },
@@ -182,6 +199,8 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 15
     {
       popup: popup('tutorial.18'),
+      // The Decree spot is highlighted, without zooming (scale 1 = the whole table)
+      focus: () => ({ locations: [{ type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }], scale: 1 }),
       move: { player: me, filter: isEmissaryOn(CourtAction.Decree) }
     },
     // 16

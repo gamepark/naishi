@@ -34,7 +34,6 @@ Mise en place standard (5 Montagnes devant chaque joueur), avec ces réglages en
 | 13  | Les émissaires permettent une autre action additionnelle : **Défausser 2 cartes de la Rivière**, de 2 piles différentes. Mais vous êtes limité à **un seul émissaire par tour**.                                                                                                                                        | les cercles Défausser 2 cartes            | Continuer                                                                      |
 | 14  | Le Fortin est sur un bord, et vos deux actions sont faites : votre tour se termine tout seul.                                                                                                                                                                                                                           | le Fortin (bord gauche de ma Ligne)       | Continuer                                                                      |
 | 15  | En prenant le Fortin, vous avez aussi **révélé** la carte suivante : une **Naishi** !                                                                                                                                                                                                                                   | la carte révélée de la pile 3             | Continuer                                                                      |
-| 16  | Votre adversaire joue : il prend la Naishi et la place au centre de sa Ligne. Elle rapporte **12 points** à cet endroit.                                                                                                                                                                                                | la Naishi                                 | _(coup écrit d'avance : l'adversaire prend la Naishi, position 3 de sa Ligne)_ |
 | 17  | Votre adversaire a pris la Naishi et l'a placée au centre de sa Ligne : elle lui rapporte **12 points** à cet endroit.                                                                                                                                                                                                  | la Naishi au centre de sa Ligne           | Continuer (pause, validée avec OK)                                             |
 | 18  | Cette Naishi vous ferait bien envie ! Le **Décret impérial** permet d'échanger une de vos cartes avec celle de votre adversaire, à la même position. Glissez un émissaire sur le **cadenas**.                                                                                                                           | la Naishi, le cadenas                     | Glisser un émissaire sur le Décret                                             |
 | 19  | Glissez votre Montagne du centre sur sa Naishi. Vous prenez sa Naishi, il prend votre Montagne.                                                                                                                                                                                                                         | ma carte du centre, la Naishi             | Échanger les 2 cartes                                                          |
@@ -57,7 +56,7 @@ Mise en place standard (5 Montagnes devant chaque joueur), avec ces réglages en
 
 1. Étape 4 : il donne sa Sentinelle.
 2. Étape 8 : un développement **au hasard**, sauf la carte du centre de la Rivière.
-3. Étape 16 : il prend la Naishi (révélée au centre de la Rivière) et la place en position 3 de sa Ligne.
+3. Après l'étape 15 (sans texte) : il prend la Naishi (révélée au centre de la Rivière) et la place en position 3 de sa Ligne.
 4. Étape 21 : un développement au hasard.
 5. Ensuite : coups au hasard, sans jamais déclarer la fin de la partie.
 
@@ -69,16 +68,8 @@ Mise en place standard (5 Montagnes devant chaque joueur), avec ces réglages en
 
 ## 7. Corrections (toutes appliquées ci-dessus)
 
-Je vais te demander de mettre à la ligne des phrases, fais un écart de paragraphe dans ce cas pour améliorier la lisibilité.
-Lorsque je demande de dézoomer, remettre en visible l'ensemble de la table.
+L'étape 16 est supprimée : les numéros des autres étapes ne changent pas.
 
-- tutorial.2 : Faire un saut de lignepour isoler la dernière phrase "A tout moment..."
-- tutorial.3 : Remplace le texte : "Voici la **Rivière**. [à la ligne] La carte du dessus de chaque sera disponible pour entrer dans votre **territoire** mais en **respectant sa position**.
-- tutorial.4 dézoomer
-- tutorial.7 dézoomer
-- tutorial.8 "Vous avez réalisé votre action de développement et une action factulative d'émissaire : votre tour se termine tout seul."
-- tutorial.16 dézoomer
-- tutorial.17 ne pas zoomer
-- tutorial.18 dézoomer
-- tutorial.21 dézoomer
-- tutorial.22 dézoomer
+- tutorial.9 : sur la carte fortin qui est intégré dans le panneau, n'afficher que 1/4 de la carte en hauteur (cartouche qui contient le scoring) et zoomer dessus pour que le joueur puisse lire l'iconographie
+- retirer l'étape tutorial.16
+- tutorial.18 : highlight l'emplacement du décret impérial
