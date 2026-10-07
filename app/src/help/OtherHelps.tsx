@@ -1,7 +1,12 @@
 import { css } from '@emotion/react'
-import { MaterialHelpProps } from '@gamepark/react-game'
+import { LocationType } from '@gamepark/naishi/material/LocationType'
+import { MaterialType } from '@gamepark/naishi/material/MaterialType'
+import { PLATFORM_URI } from '@gamepark/react-client'
+import { MaterialHelpProps, PlayMoveButton, ThemeButton } from '@gamepark/react-game'
+import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import Board from '../images/boards/board.png'
+import { setPlaymatPreference, usePlaymatDisplayed, useSubscriber } from '../locators/PlaymatDisplay'
 import Ryokan4 from '../images/cards/ryokan-4.jpg'
 import Ryokan7 from '../images/cards/ryokan-7.jpg'
 import { Arrow, HelpPage, P, Section } from './parts'
@@ -36,8 +41,9 @@ const CourtAction = ({ crop, title, text }: { crop: JSX.Element; title: string; 
   )
 }
 
-export const CourtBoardHelp = (_props: MaterialHelpProps) => (
-  <HelpPage title="help.court.name">
+/** The help of the Imperial Court board, and of the game mat that replaces it */
+export const CourtBoardHelp = ({ itemType, closeDialog }: MaterialHelpProps) => (
+  <HelpPage title={itemType === MaterialType.Playmat ? 'help.playmat.name' : 'help.court.name'}>
     <P k="help.court.intro" />
     <Section title="help.court.main">
       <CourtAction crop={<BoardCrop x={570} y={110} width={330} height={120} />} title="help.court.decree.name" text="help.court.decree" />
@@ -49,8 +55,43 @@ export const CourtBoardHelp = (_props: MaterialHelpProps) => (
     <Section title="help.court.recall.name">
       <P k="help.court.recall" />
     </Section>
+    <PlaymatSection playmat={itemType === MaterialType.Playmat} closeDialog={closeDialog} />
   </HelpPage>
 )
+
+/**
+ * The game mat is for the subscribers: they switch between the mat and the board, the other players can look at the mat.
+ * @param playmat the help is the one of the mat
+ */
+const PlaymatSection = ({ playmat, closeDialog }: { playmat: boolean; closeDialog: () => void }) => {
+  const { t, i18n } = useTranslation()
+  const subscriber = useSubscriber()
+  const displayed = usePlaymatDisplayed()
+  const switchDisplay = () => {
+    setPlaymatPreference(!displayed)
+    closeDialog()
+  }
+  return (
+    <Section title="help.playmat.name">
+      <P k="help.playmat.subscribers" />
+      <div css={buttonsCss}>
+        {subscriber ? (
+          <ThemeButton onClick={switchDisplay}>{t(displayed ? 'help.playmat.board' : 'help.playmat.play')}</ThemeButton>
+        ) : playmat ? (
+          <a css={subscribeCss} href={`${PLATFORM_URI}/${i18n.language}/subscription`} target="_blank" rel="noreferrer">
+            {t('help.playmat.subscribe')}
+          </a>
+        ) : (
+          <PlayMoveButton move={displayPlaymatHelp} local>
+            {t('help.playmat.see')}
+          </PlayMoveButton>
+        )}
+      </div>
+    </Section>
+  )
+}
+
+const displayPlaymatHelp = MaterialMoveBuilder.displayMaterialHelp(MaterialType.Playmat, { location: { type: LocationType.Playmat } })
 
 export const EmissaryHelp = (_props: MaterialHelpProps) => (
   <HelpPage title="help.emissary.name">
@@ -98,6 +139,15 @@ const cropCss = css`
   background-repeat: no-repeat;
   background-color: white;
   box-shadow: 0 0 0.2em rgba(0, 0, 0, 0.4);
+`
+
+const buttonsCss = css`
+  margin: 0.6em 0;
+`
+
+const subscribeCss = css`
+  color: inherit;
+  font-weight: bold;
 `
 
 const actionCss = css`

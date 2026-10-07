@@ -4,6 +4,7 @@ import { BoardDescription, ItemContext, MaterialContext } from '@gamepark/react-
 import { isCustomMoveType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 import CourtBoard from '../images/boards/board.png'
+import { isPlaymatDisplayed } from '../locators/PlaymatDisplay'
 import { courtBoardFootprint, courtBoardSize } from '../locators/TableLayout'
 import { CourtBoardHelp } from '../help/OtherHelps'
 import { ImageButton, symbolButtonRatio } from './ImageButton'
@@ -21,7 +22,7 @@ class CourtBoardDescription extends BoardDescription {
 
   /** With the game mat, the board is not shown */
   getStaticItems(context: MaterialContext) {
-    return context.rules.game.options?.playmat === true ? [] : super.getStaticItems(context)
+    return isPlaymatDisplayed() ? [] : super.getStaticItems(context)
   }
 
   /** A button under the board to recall the Emissaries: the symbol of the player, with the arrow pointing down to their reserve */

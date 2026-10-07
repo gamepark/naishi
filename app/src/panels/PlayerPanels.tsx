@@ -4,7 +4,8 @@ import { StyledPlayerPanel, usePlayers, useRules } from '@gamepark/react-game'
 import NaishiFace from '../images/avatars/koshikibu-no-naishi.png'
 import BlackEmissary from '../images/tokens/black.png'
 import WhiteEmissary from '../images/tokens/white.png'
-import { playerPanelEmWidth, playerPanelZ, TableLayout, tableLayoutOf } from '../locators/TableLayout'
+import { getTableLayout, playerPanelEmWidth, playerPanelZ, TableLayout } from '../locators/TableLayout'
+import { usePlaymatDisplayed } from '../locators/PlaymatDisplay'
 
 /**
  * The panels of the 2 players are laid on the table, so that they pan and zoom with the material: each one is on the edge of its player, left of its Hand.
@@ -14,8 +15,8 @@ import { playerPanelEmWidth, playerPanelZ, TableLayout, tableLayoutOf } from '..
 export const PlayerPanels = () => {
   const players = usePlayers<number>({ sortFromMe: true })
   const rules = useRules<NaishiRules>()
+  const layout = getTableLayout(usePlaymatDisplayed())
   if (!rules) return null
-  const layout = tableLayoutOf({ rules })
   const tutorial = rules.game.tutorial !== undefined
 
   return (

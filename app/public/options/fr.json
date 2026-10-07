@@ -1,6 +1,4 @@
 {
   "option.legendsAndTravellers": "Extension Légendes & Voyageurs",
-  "option.legendsAndTravellers.help": "3 légendes remplacent 3 personnages, 5 voyageurs et le Ryokan rejoignent la partie.",
-  "option.playmat": "Tapis de jeu",
-  "option.playmat.help": "Le tapis de jeu remplace la cour impériale. Seul l’affichage change, pas les règles."
+  "option.legendsAndTravellers.help": "3 légendes remplacent 3 personnages, 5 voyageurs et le Ryokan rejoignent la partie."
 }

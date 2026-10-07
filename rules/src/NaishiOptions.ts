@@ -9,8 +9,6 @@ export type NaishiOptions = {
   players: number
   /** Legends & Travellers extension */
   legendsAndTravellers?: boolean
-  /** The game mat replaces the Imperial Court board (display only: the rules are the same) */
-  playmat?: boolean
 }
 
 /**
@@ -21,7 +19,6 @@ export const NaishiOptionsSpecV2: OptionsSpecV2 = {
   specVersion: 2,
   players: { min: 2, max: 2 },
   options: {
-    legendsAndTravellers: { kind: 'boolean' },
-    playmat: { kind: 'boolean' }
+    legendsAndTravellers: { kind: 'boolean' }
   }
 }

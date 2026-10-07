@@ -5,6 +5,7 @@ import { isCustomMoveType, MaterialItem, MaterialMove } from '@gamepark/rules-ap
 import { Trans } from 'react-i18next'
 import Playmat from '../images/boards/playmat.jpg'
 import { CourtBoardHelp } from '../help/OtherHelps'
+import { isPlaymatDisplayed } from '../locators/PlaymatDisplay'
 import { playmatSize } from '../locators/TableLayout'
 import { ImageButton, symbolButtonRatio } from './ImageButton'
 import { symbolImage } from './symbolImages'
@@ -12,7 +13,7 @@ import { symbolImage } from './symbolImages'
 /** Where the button to recall the Emissaries is, from the center of the mat (cm): at the bottom left, outside of the mat */
 const recallButton = { x: -25.5, y: 19.6 }
 
-/** The game mat (option `playmat`): it replaces the Imperial Court board, and is under the River and the Lines */
+/** The game mat (display choice of the subscribers): it replaces the Imperial Court board, and is under the River and the Lines */
 class PlaymatDescription extends BoardDescription {
   width = playmatSize.width
   height = playmatSize.height
@@ -21,8 +22,8 @@ class PlaymatDescription extends BoardDescription {
   menuAlwaysVisible = true
   help = CourtBoardHelp
 
-  getStaticItems(context: MaterialContext) {
-    return context.rules.game.options?.playmat === true ? [{ location: { type: LocationType.Playmat } }] : []
+  getStaticItems(_context: MaterialContext) {
+    return isPlaymatDisplayed() ? [{ location: { type: LocationType.Playmat } }] : []
   }
 
   /** A button to recall the Emissaries: the symbol of the player, with the arrow pointing down to their reserve */

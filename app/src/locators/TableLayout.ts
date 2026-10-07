@@ -1,5 +1,6 @@
 import { MaterialContext } from '@gamepark/react-game'
 import { CourtAction } from '@gamepark/naishi/material/CourtAction'
+import { isPlaymatDisplayed } from './PlaymatDisplay'
 
 /**
  * Anchor points of the table, in cm. Every locator derives its positions from here.
@@ -15,7 +16,7 @@ import { CourtAction } from '@gamepark/naishi/material/CourtAction'
  * The Imperial Court board is on the left, with the panel of each player on its edge of the table, left of its Hand, and the First player card above it.
  * The discard pile and the Ryokan are on the right.
  *
- * With the game mat (option `playmat`), the mat replaces the Imperial Court board and is under the River and the Lines:
+ * With the game mat (a display choice of the subscribers, see `PlaymatDisplay`), the mat replaces the Imperial Court board and is under the River and the Lines:
  * the columns are the ones printed on the mat, and the Hands are outside of it. The sides of the table stay the same:
  * the court and the Emissaries on the left, the discard pile, the Ryokan and the score block on the right.
  */
@@ -194,9 +195,9 @@ export function getTableLayout(playmat: boolean) {
   }
 }
 
-/** The layout of the table (the options of the game tell if the mat is used) */
-export function tableLayoutOf(context: Pick<MaterialContext, 'rules'>): TableLayout {
-  return getTableLayout(context.rules.game.options?.playmat === true)
+/** The layout of the table, with the mat if the viewer displays it */
+export function tableLayout(): TableLayout {
+  return getTableLayout(isPlaymatDisplayed())
 }
 
 /** The player shown at the bottom of the table: the player looking at the game, or the first player for a spectator */

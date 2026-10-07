@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { GameDisplay } from './GameDisplay'
 import { GameOverHeader } from './headers/GameOverHeader'
 import { Headers } from './headers/Headers'
+import { SubscriberWatcher } from './locators/PlaymatDisplay'
 
 export function App() {
   const game = useGame<MaterialGame>()
@@ -25,6 +26,7 @@ export function App() {
       <Menu />
       <FailuresDialog />
       <FullscreenDialog />
+      <SubscriberWatcher />
     </>
   )
 }
