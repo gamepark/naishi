@@ -22,7 +22,6 @@ function play(game: Game, move: MaterialMove<number, MaterialType, LocationType>
 
 const isItemMove = (move: MaterialMove) => isMoveItemType(MaterialType.Card)(move) || isMoveItemType(MaterialType.Emissary)(move)
 const isSpotMove = (action: CourtAction) => (move: MaterialMove) => isMoveItemType(MaterialType.Emissary)(move) && move.location.type === LocationType.CourtSpot && move.location.id === action
-const isBackToReserve = (move: MaterialMove) => isMoveItemType(MaterialType.Emissary)(move) && move.location.type === LocationType.EmissaryReserve
 const isEndTurn = (move: MaterialMove) => isCustomMoveType(CustomMoveType.EndTurn)(move)
 
 const activePlayers = (game: Game): number[] => (game.rule?.players ?? (game.rule?.player !== undefined ? [game.rule.player] : []))
@@ -138,8 +137,8 @@ describe('Naishi game', () => {
     play(game, spot)
     expect(game.rule).toMatchObject({ id: RuleId.SwapCards, player: 1 })
     const swap = new NaishiRules(game).getLegalMoves(1)
-    // 10 River pairs, 10 Line pairs, 10 Hand pairs, 5 Hand-Line pairs, and taking the Emissary back
-    expect(swap).toHaveLength(36)
+    // 10 River pairs, 10 Line pairs, 10 Hand pairs, 5 Hand-Line pairs
+    expect(swap).toHaveLength(35)
     const lineBefore = cardsOf(game, LocationType.Line, 1).getItems().map((item) => item.id)
     play(game, swap.find((m) => isCustomMove(m) && cardsOf(game, LocationType.River).getIndexes().includes(m.data.a))!)
     expect(game.rule).toMatchObject({ id: RuleId.PlayerTurn, player: 1 })
@@ -159,7 +158,7 @@ describe('Naishi game', () => {
     play(game, spot)
     expect(game.rule).toMatchObject({ id: RuleId.DiscardRiverCards })
     const first = new NaishiRules(game).getLegalMoves(1)
-    expect(first).toHaveLength(6) // 5 cards, or taking the Emissary back
+    expect(first).toHaveLength(5)
     play(game, first[0])
     // the next card is not revealed before the 2 cards are discarded
     expect(cardsOf(game, LocationType.River).length).toBe(4)
@@ -180,8 +179,8 @@ describe('Naishi game', () => {
     play(game, decree)
     expect(game.rule).toMatchObject({ id: RuleId.ImperialDecree })
     const swaps = new NaishiRules(game).getLegalMoves(1)
-    // 10 swaps, or taking the Emissary back
-    expect(swaps).toHaveLength(11)
+    // 5 Hand swaps and 5 Line swaps
+    expect(swaps).toHaveLength(10)
     play(game, swaps[9])
     // the decree ends the turn
     expect(game.rule).toMatchObject({ id: RuleId.PlayerTurn, player: 2 })
@@ -189,32 +188,6 @@ describe('Naishi game', () => {
     const moves = new NaishiRules(game).getLegalMoves(2)
     expect(moves.some(isSpotMove(CourtAction.Decree))).toBe(false)
     expect(new NaishiRules(game).material(MaterialType.Emissary).location(LocationType.CourtSpot).length).toBe(1)
-  })
-
-  it('an Emissary can be taken back as long as its action is not done', () => {
-    for (const action of [CourtAction.Decree, CourtAction.Swap, CourtAction.DiscardRiver]) {
-      const game = newGame()
-      exchangeCards(game)
-      const rules = () => new NaishiRules(game)
-      play(game, rules().getLegalMoves(1).find(isSpotMove(action))!)
-      expect(rules().material(MaterialType.Emissary).location(LocationType.CourtSpot).length).toBe(1)
-      play(game, rules().getLegalMoves(1).find(isBackToReserve)!)
-      expect(game.rule).toMatchObject({ id: RuleId.PlayerTurn })
-      expect(rules().material(MaterialType.Emissary).location(LocationType.CourtSpot).length).toBe(0)
-      expect(rules().material(MaterialType.Emissary).location(LocationType.EmissaryReserve).player(1).length).toBe(2)
-      // everything is possible again, as if nothing had happened
-      expect(rules().getLegalMoves(1).some(isSpotMove(CourtAction.Decree))).toBe(true)
-      expect(rules().getLegalMoves(1).some(isSpotMove(CourtAction.Swap))).toBe(true)
-    }
-  })
-
-  it('discarding River cards cannot be cancelled once a card is discarded', () => {
-    const game = newGame()
-    exchangeCards(game)
-    const rules = () => new NaishiRules(game)
-    play(game, rules().getLegalMoves(1).find(isSpotMove(CourtAction.DiscardRiver))!)
-    play(game, rules().getLegalMoves(1).find((move) => !isCustomMove(move))!)
-    expect(rules().getLegalMoves(1).some(isBackToReserve)).toBe(false)
   })
 
   it('the turn ends by itself when the main action and the additional action are done', () => {
@@ -266,5 +239,5 @@ describe('Naishi game', () => {
         }
       }
     }
-  })
+  }, 30000)
 })

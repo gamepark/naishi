@@ -1,10 +1,10 @@
 import { CustomMove, isCustomMoveType, MaterialMove, RuleMove } from '@gamepark/rules-api'
 import { CardId } from '../material/CardId'
 import { LocationType } from '../material/LocationType'
-import { TravellerEffect, travellerEffects, TravellerTrigger } from '../material/Traveller'
+import { TravellerEffect, travellerEffects } from '../material/Traveller'
 import { CustomMoveType, TravellerEffectData } from './CustomMoveType'
 import { Memory } from './Memory'
-import { NaishiPlayerRule, revealNextCard } from './NaishiPlayerRule'
+import { NaishiPlayerRule, revealMissingCards } from './NaishiPlayerRule'
 import { RuleId } from './RuleId'
 
 const startsRule = (card: CardId) => {
@@ -28,13 +28,7 @@ export class ResolveTravellerEffectsRule extends NaishiPlayerRule {
     ])
   }
 
-  /** The Traveller that left the territory is known now: the card that was replaced has been shown and discarded */
   onRuleStart(_move: RuleMove): MaterialMove[] {
-    const discarded = this.remind<CardId | undefined>(Memory.DiscardedTraveller)
-    this.forget(Memory.DiscardedTraveller)
-    if (discarded !== undefined && travellerEffects[discarded]?.trigger === TravellerTrigger.Leave) {
-      this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, discarded])
-    }
     return this.getPendingEffects().length === 0 ? this.finish() : []
   }
 
@@ -68,9 +62,7 @@ export class ResolveTravellerEffectsRule extends NaishiPlayerRule {
 
   /** All the effects are resolved: the next cards of the piles are revealed, and the turn goes on */
   finish(): MaterialMove[] {
-    const piles = this.remind<number[] | undefined>(Memory.PilesToReveal) ?? []
-    this.forget(Memory.PilesToReveal)
     this.forget(Memory.PendingEffects)
-    return [...piles.flatMap((pile) => revealNextCard((type) => this.material(type), pile)), ...this.backToTurn()]
+    return [...revealMissingCards((type) => this.material(type)), ...this.backToTurn()]
   }
 }

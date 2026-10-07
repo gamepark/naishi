@@ -86,7 +86,6 @@ export class PlayerTurnRule extends NaishiPlayerRule {
   afterItemMove(move: ItemMove): MaterialMove[] {
     if (isMoveItemType(MaterialType.Emissary)(move) && move.location.type === LocationType.CourtSpot) {
       this.memorize(Memory.AdditionalActionDone, true)
-      this.memorize(Memory.PlacedEmissary, move.itemIndex)
       switch (move.location.id as CourtAction) {
         case CourtAction.Decree:
           this.memorize(Memory.MainActionDone, true)

@@ -15,6 +15,14 @@ export function revealNextCard(material: (type: MaterialType) => NaishiMaterial,
   return deck.length > 0 ? [deck.deck().dealOne({ type: LocationType.River, x: pile })] : []
 }
 
+/** Reveals the next card of every River pile whose revealed card is gone */
+export function revealMissingCards(material: (type: MaterialType) => NaishiMaterial): MaterialMove[] {
+  const river = material(MaterialType.Card).location(LocationType.River)
+  return Array.from({ length: riverPiles }, (_, pile) => pile)
+    .filter((pile) => river.filter((item) => item.location.x === pile).length === 0)
+    .flatMap((pile) => revealNextCard(material, pile))
+}
+
 /** The piles of the River with no card left: nothing revealed, nothing face down */
 export function getEmptyPiles(material: (type: MaterialType) => NaishiMaterial): number[] {
   const river = material(MaterialType.Card).location(LocationType.River)
@@ -63,21 +71,6 @@ export abstract class NaishiPlayerRule extends PlayerTurnRule<number, MaterialTy
     return this.material(MaterialType.Ryokan)
   }
 
-  /** While an action chosen with an Emissary is not done, the player can change their mind and put the Emissary back in their reserve */
-  getCancelMoves(): MaterialMove[] {
-    const placed = this.remind<number | undefined>(Memory.PlacedEmissary)
-    return placed === undefined ? [] : [this.material(MaterialType.Emissary).index(placed).moveItem({ type: LocationType.EmissaryReserve, player: this.player })]
-  }
-
-  /** The Emissary is back in the reserve: the action is cancelled, and so is the main action if it was the decree */
-  afterCancel(move: ItemMove, decree = false): MaterialMove[] {
-    if (!isMoveItemType(MaterialType.Emissary)(move) || move.location.type !== LocationType.EmissaryReserve) return []
-    if (decree) this.forget(Memory.MainActionDone)
-    this.forget(Memory.AdditionalActionDone)
-    this.forget(Memory.PlacedEmissary)
-    return this.backToTurn()
-  }
-
   /** Back to the choice of actions of the turn, once an action is over */
   backToTurn(): MaterialMove[] {
     return [this.startRule(RuleId.PlayerTurn)]
@@ -103,12 +96,13 @@ export abstract class NaishiPlayerRule extends PlayerTurnRule<number, MaterialTy
     return []
   }
 
-  /** A discarded Traveller is remembered, until its effect is known */
+  /** The card replaced by a development is known once discarded: a Traveller that leaves the territory has its effect */
   afterDiscard(move: ItemMove): MaterialMove[] {
     if (isMoveItemType(MaterialType.Card)(move) && move.location.type === LocationType.Discard) {
-      const discarded = this.material(MaterialType.Card).index(move.itemIndex)
-      const id = discarded.getItem<CardId>()!.id!
-      if (isTraveller(id)) this.memorize(Memory.DiscardedTraveller, id)
+      const id = this.material(MaterialType.Card).getItem<CardId>(move.itemIndex).id!
+      if (travellerEffects[id]?.trigger === TravellerTrigger.Leave) {
+        this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, id])
+      }
     }
     return []
   }
@@ -136,7 +130,6 @@ export abstract class NaishiPlayerRule extends PlayerTurnRule<number, MaterialTy
         this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, entered])
       }
     }
-    this.memorize<number[]>(Memory.PilesToReveal, (piles = []) => [...piles, pile])
     return [...moves, this.startRule(RuleId.ResolveTravellerEffects)]
   }
 
