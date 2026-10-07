@@ -6,7 +6,7 @@ import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { CustomMoveType, SwapCardsData } from '@gamepark/naishi/rules/CustomMoveType'
 import { MaterialTutorial, TutorialStep } from '@gamepark/react-game'
-import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { cardHeight, cardWidth, courtBoardFootprint, emissaryDiameter, emissaryReserveGap, getTableLayout, lineY, riverY } from '../locators/TableLayout'
@@ -414,7 +414,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     // 22: recall the Emissaries with the button under the Imperial Court
     {
       popup: popup('tutorial.22', 'center'),
-      move: { player: me, filter: (move) => isCustomMoveType(CustomMoveType.RecallEmissaries)(move) }
+      move: { player: me, filter: isMoveItemTypeAtOnce(MaterialType.Emissary) }
     },
     // 23: the end of the scenario, the game goes on freely
     { popup: popup('tutorial.23', 'center') }

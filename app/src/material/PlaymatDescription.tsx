@@ -1,7 +1,7 @@
 import { LocationType } from '@gamepark/naishi/material/LocationType'
-import { CustomMoveType } from '@gamepark/naishi/rules/CustomMoveType'
+import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { BoardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
-import { isCustomMoveType, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { isMoveItemTypeAtOnce, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { Trans } from 'react-i18next'
 import Playmat from '../images/boards/playmat.jpg'
 import { CourtBoardHelp } from '../help/OtherHelps'
@@ -31,7 +31,7 @@ class PlaymatDescription extends BoardDescription {
 
   /** A button to recall the Emissaries: the symbol of the player, with the arrow pointing down to their reserve */
   getItemMenu(_item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {
-    const recall = legalMoves.find(isCustomMoveType(CustomMoveType.RecallEmissaries))
+    const recall = legalMoves.find(isMoveItemTypeAtOnce(MaterialType.Emissary))
     if (!recall) return null
     const { emissaryReserveX, playmatCenter } = tableLayout()
     return (

@@ -1,8 +1,6 @@
 export enum CustomMoveType {
   /** Swap 2 cards. data: SwapCardsData */
   SwapCards = 1,
-  /** Get back all the Emissaries from the Imperial Court board (except the one on the decree) */
-  RecallEmissaries,
   /** Declare the end of the game */
   DeclareEndOfGame,
   /** Confirm the end of the turn */

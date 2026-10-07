@@ -1,4 +1,4 @@
-import { applyAutomaticMoves, hasRandomMove, isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { applyAutomaticMoves, hasRandomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { describe, expect, it } from 'vitest'
 import { NaishiRules } from './NaishiRules'
 import { NaishiTutorialSetup } from './NaishiTutorialSetup'
@@ -100,7 +100,7 @@ describe('Tutorial setup', () => {
     move(2, (m) => isMoveItemType(MaterialType.Card)(m) && (m.location.type === LocationType.Line || m.location.type === LocationType.Hand))
     endTurn(2)
     // 19: recall the Emissary of Intervertir
-    move(1, (m) => isCustomMoveType(CustomMoveType.RecallEmissaries)(m))
+    move(1, (m) => isMoveItemTypeAtOnce(MaterialType.Emissary)(m))
     expect(game.rule).toMatchObject({ id: RuleId.PlayerTurn, player: 2 })
     // the opponent never declares the end of the game in the tutorial
     expect(rules().getLegalMoves(2).some((m) => isCustomMoveType(CustomMoveType.DeclareEndOfGame)(m))).toBe(false)

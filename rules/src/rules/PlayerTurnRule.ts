@@ -1,4 +1,4 @@
-import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
+import { CustomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { CourtAction, courtSpotsCount } from '../material/CourtAction'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -67,8 +67,10 @@ export class PlayerTurnRule extends NaishiPlayerRule {
     return [...this.getSpotMoves(CourtAction.Swap), ...(this.river.length >= 2 ? this.getSpotMoves(CourtAction.DiscardRiver) : [])]
   }
 
+  /** Get back all the Emissaries from the Imperial Court board (except the one on the decree), all at once */
   getRecallMoves(): MaterialMove[] {
-    return this.getRecalledEmissaries().length > 0 ? [this.customMove(CustomMoveType.RecallEmissaries)] : []
+    const emissaries = this.getRecalledEmissaries()
+    return emissaries.length > 0 ? [emissaries.moveItemsAtOnce({ type: LocationType.EmissaryReserve, player: this.player })] : []
   }
 
   /** The end of the game can be declared when a pile of the River is empty, unless the end of the game was already triggered */
@@ -84,6 +86,11 @@ export class PlayerTurnRule extends NaishiPlayerRule {
   }
 
   afterItemMove(move: ItemMove): MaterialMove[] {
+    if (isMoveItemTypeAtOnce(MaterialType.Emissary)(move)) {
+      this.memorize(Memory.MainActionDone, true)
+      this.memorize(Memory.AdditionalActionDone, true)
+      return this.endTurn()
+    }
     if (isMoveItemType(MaterialType.Emissary)(move) && move.location.type === LocationType.CourtSpot) {
       this.memorize(Memory.AdditionalActionDone, true)
       switch (move.location.id as CourtAction) {
@@ -109,11 +116,6 @@ export class PlayerTurnRule extends NaishiPlayerRule {
   }
 
   onCustomMove(move: CustomMove): MaterialMove[] {
-    if (isCustomMoveType(CustomMoveType.RecallEmissaries)(move)) {
-      this.memorize(Memory.MainActionDone, true)
-      this.memorize(Memory.AdditionalActionDone, true)
-      return [...this.getRecalledEmissaries().moveItems({ type: LocationType.EmissaryReserve, player: this.player }), ...this.endTurn()]
-    }
     if (isCustomMoveType(CustomMoveType.DeclareEndOfGame)(move)) {
       this.memorize(Memory.FinalTurn, this.nextPlayer)
       return this.endTurn()

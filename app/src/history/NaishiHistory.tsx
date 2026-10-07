@@ -5,7 +5,7 @@ import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { ChooseNinjaCopyData, CustomMoveType, SwapCardsData } from '@gamepark/naishi/rules/CustomMoveType'
 import { RuleId } from '@gamepark/naishi/rules/RuleId'
 import { LogDescription, MoveComponentContext, MoveComponentProps, usePlayerName } from '@gamepark/react-game'
-import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { CustomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, ItemMove, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { Trans, useTranslation } from 'react-i18next'
 
 type Props = MoveComponentProps<MaterialMove, number>
@@ -91,8 +91,9 @@ export class NaishiHistory implements LogDescription {
       if (type === LocationType.Discard && context.game.rule?.id === RuleId.DiscardRiverCards) return { Component: DiscardRiver, player, depth: 1 }
       return undefined
     }
+    // The Emissaries recalled by a Traveller are told by the use of its effect
+    if (isMoveItemTypeAtOnce(MaterialType.Emissary)(move)) return context.game.rule?.id === RuleId.PlayerTurn ? { Component: Recall, player } : undefined
     if (isMoveItemType(MaterialType.Emissary)(move)) {
-      // The Emissaries that go back to the reserve are told by the move that recalls them
       if (move.location.type !== LocationType.CourtSpot) return undefined
       return { Component: Emissary, player: context.game.items[MaterialType.Emissary]?.[move.itemIndex]?.id as number | undefined }
     }
@@ -101,7 +102,6 @@ export class NaishiHistory implements LogDescription {
       return { Component: Ryokan, player: move.location.player, depth: 1 }
     }
     if (isCustomMoveType(CustomMoveType.SwapCards)(move)) return { Component: Swap, player }
-    if (isCustomMoveType(CustomMoveType.RecallEmissaries)(move)) return { Component: Recall, player }
     if (isCustomMoveType(CustomMoveType.DeclareEndOfGame)(move)) return { Component: DeclareEnd, player }
     if (isCustomMoveType(CustomMoveType.UseTravellerEffect)(move)) return { Component: UseEffect, player }
     if (isCustomMoveType(CustomMoveType.IgnoreTravellerEffect)(move)) return { Component: IgnoreEffect, player }
