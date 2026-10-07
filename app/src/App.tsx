@@ -1,4 +1,5 @@
-import { FailuresDialog, FullscreenDialog, LoadingScreen, MaterialGameSounds, MaterialHeader, MaterialImageLoader, Menu, useGame } from '@gamepark/react-game'
+import { css } from '@emotion/react'
+import { FailuresDialog, FullscreenDialog, LiveLogContainer, LoadingScreen, MaterialGameSounds, MaterialHeader, MaterialImageLoader, Menu, useGame } from '@gamepark/react-game'
 import { MaterialGame } from '@gamepark/rules-api'
 import { useEffect, useState } from 'react'
 import { GameDisplay } from './GameDisplay'
@@ -19,6 +20,7 @@ export function App() {
       <LoadingScreen display={loading} />
       <MaterialHeader rulesStepsHeaders={Headers} GameOver={GameOverHeader} loading={loading} />
       <MaterialImageLoader onImagesLoad={() => setImagesLoading(false)} />
+      {!loading && <LiveLogContainer css={liveLogCss} />}
       <MaterialGameSounds />
       <Menu />
       <FailuresDialog />
@@ -26,3 +28,12 @@ export function App() {
     </>
   )
 }
+
+/** The last lines of the history, on top of the table, at the right under the header */
+const liveLogCss = css`
+  position: absolute;
+  right: 1em;
+  top: 8em;
+  width: 45em;
+  pointer-events: none;
+`

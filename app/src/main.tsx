@@ -10,6 +10,7 @@ import { App } from './App'
 import { Locators } from './locators/Locators'
 import { Material } from './material/Material'
 import { NaishiScoring } from './scoring/NaishiScoring'
+import { NaishiHistory } from './history/NaishiHistory'
 import { naishiTutorial } from './tutorial/NaishiTutorial'
 
 /** The popup of the tutorial is at the right of an element of the table: PopupAnchor gives the position of the popup in 2 CSS variables */
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
       animations={gameAnimations}
       scoring={new NaishiScoring()}
       tutorial={naishiTutorial}
+      logs={new NaishiHistory()}
       theme={{ tutorial: { container: tutorialPopupCss } }}
     >
       <App />
