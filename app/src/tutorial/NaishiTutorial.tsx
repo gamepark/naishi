@@ -41,26 +41,22 @@ const CardScoring = ({ id }: { id: CardId }) => (
 
 /**
  * The popup is at the right of an element of the table, see PopupAnchor.
- * When the step zooms on elements, `shown` leaves room around them: at the right for the popup, and at the left for the panels of the players
- * when the elements are tall enough to reach them (the panels are at the top left and the bottom left of the screen).
- * `width` and `height` are the size (cm) of the elements that are shown, `panels` tells that they are at the bottom or at the top of the table, where the panels are.
+ * When the step zooms on elements, `shown` leaves room at their right for the popup.
+ * `width` and `height` are the size (cm) of the elements that are shown.
  * The room is computed in vh (1 % of the height of the screen), for a screen of 16/9: the table is 156 vh wide and 93 vh high.
  */
-const shown = (width: number, height: number, step: Step, panels = false): Step => {
+const shown = (width: number, height: number, step: Step): Step => {
   const { focus } = step
   if (!focus) return step
   const tableWidthVh = 156
   const tableHeightVh = 93
-  const panelsVh = 43
   let right = 0
-  let left = 0
   // The zoom depends on the room, which depends on the zoom: a few iterations are enough
   for (let i = 0; i < 8; i++) {
-    const scale = Math.min(tableWidthVh / (width + right + left), tableHeightVh / height)
+    const scale = Math.min(tableWidthVh / (width + right), tableHeightVh / height)
     right = popupWidth / scale + 1.5
-    left = panels || height * scale > 55 ? panelsVh / scale : 0
   }
-  const margin = { top: 1, bottom: 1, right: Math.ceil(right), left: Math.ceil(left) }
+  const margin = { top: 1, bottom: 1, right: Math.ceil(right), left: 0 }
   return { ...step, focus: (game, context) => ({ ...focus(game, context), margin }) }
 }
 
@@ -163,7 +159,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     shown(33.5, 18.1, {
       popup: popup('tutorial.2', rightOfTerritory),
       focus: (game) => ({ materials: [this.cards(game).player(me).location((l) => l.type === LocationType.Line || l.type === LocationType.Hand)] })
-    }, true),
+    }),
     // 3
     {
       popup: popup('tutorial.3', rightOfRiver),
@@ -180,7 +176,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
     shown(33.5, 8.8, {
       popup: popup('tutorial.5', rightOfHand),
       focus: (game) => ({ materials: [this.cards(game).location(LocationType.Hand).player(me)] })
-    }, true),
+    }),
     // 6: a first normal move: the Sentinel of the pile 2 goes to the position 2. The zoom shows the 3 cards that can be played (the Sentinel, the Line and the Hand
     // at the position 2), the popup is at the right of them, the table is shown whole when the popup is closed
     thenUnzoomed(
@@ -196,8 +192,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
             ]
           }),
           move: { player: me, filter: (move, game) => isDevelop(riverIndex(game, 1), me, 1, true)(move) }
-        },
-        true
+        }
       )
     ),
     // 7: end the turn
@@ -270,7 +265,7 @@ export class NaishiTutorial extends MaterialTutorial<number, MaterialType, Locat
         popup: popup('tutorial.19', rightOfMiddleCard(0)),
         focus: (game) => ({ materials: [this.cards(game).location(LocationType.Line).filter((item) => item.location.x === 2)] }),
         move: { player: me, filter: (move, game) => isSwap(move, lineIndex(game, me, 2), lineIndex(game, opponent, 2)) }
-      }, true)
+      })
     ),
     // 20: the popup is at the right of the Imperial Court
     shown(3, 3, {

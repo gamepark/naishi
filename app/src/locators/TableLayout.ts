@@ -12,7 +12,8 @@ import { CourtAction } from '@gamepark/naishi/material/CourtAction'
  *    my Line
  *    my Hand
  *
- * The Imperial Court board and the First player card are on the left, the discard pile and the Ryokan on the right.
+ * The Imperial Court board is on the left, with the panel of each player on its edge of the table, left of its Hand, and the First player card above it.
+ * The discard pile and the Ryokan are on the right.
  *
  * With the game mat (option `playmat`), the mat replaces the Imperial Court board and is under the River and the Lines:
  * the columns are the ones printed on the mat, and the Hands are outside of it. The sides of the table stay the same:
@@ -92,6 +93,13 @@ export const emissaryReserveGap = 2.6
 /** The base cards that the Legends replace: a column above the Ryokan, each card shifted down so that the 3 can be told apart */
 export const setAsideGap = 1.8
 
+/** StyledPlayerPanel draws itself 28 em wide: giving it a width in cm sets the size of everything in it */
+export const playerPanelEmWidth = 28
+/** Its height (em), measured: the avatar, the name and the timer */
+const playerPanelEmHeight = 8.1
+/** The panel is laid over every piece of material, including the items animated in flight across the table */
+export const playerPanelZ = 20
+
 export type TableLayout = ReturnType<typeof getTableLayout>
 
 /** @param playmat the game mat replaces the Imperial Court board */
@@ -122,8 +130,6 @@ export function getTableLayout(playmat: boolean) {
   const emissaryReserveX = territoryLeftEdge - 1.5
   /** Distance from the River of the middle of the 2 Emissaries: between the Line and the Hand, or under the mat (outside of it) */
   const emissaryReserveY = playmat ? playmatSize.height / 2 + 0.5 + emissaryDiameter / 2 + emissaryReserveGap / 2 : (lineY + handY) / 2
-  /** First player card: 57.5 × 82.4 mm plus the shadow margin, beside the Hand of the player who has it, on the side of the Imperial Court board (further than the Emissaries) */
-  const firstPlayerCardX = territoryLeftEdge - 2.9 - 3.1
   /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
   const rightSideBaseX = territoryRightEdge + 1 + 3.1
   // With the mat, they are moved to the right of its edge, so that they are not on the image
@@ -143,8 +149,6 @@ export function getTableLayout(playmat: boolean) {
     : [courtBoardCenter.x - courtBoardFootprint.width / 2, courtBoardCenter.x + courtBoardFootprint.width / 2]
   const extents = [
     ...courtExtent,
-    firstPlayerCardX - cardWidth / 2,
-    firstPlayerCardX + cardWidth / 2,
     ryokanX - cardWidth / 2,
     ryokanX + cardWidth / 2,
     scorePadCenter.x - scorePadSize.width / 2,
@@ -152,6 +156,23 @@ export function getTableLayout(playmat: boolean) {
   ]
   const halfWidth = Math.max(...extents.map(Math.abs)) + 0.5
   const halfHeight = handY + cardHeight / 2 + 0.4
+
+  /**
+   * The panel of a player is on its edge of the table, in the left corner, as low as its Hand and up to it.
+   * With the mat, the Emissaries are beside the Hand (under the mat): the panel stops before them.
+   */
+  const playerPanelLeft = -halfWidth + 0.3
+  const playerPanelRight = playmat ? emissaryReserveX - emissaryDiameter / 2 - 0.3 : territoryLeftEdge - 0.4
+  const playerPanelWidth = playerPanelRight - playerPanelLeft
+  /** Distance from the River of the outer edge of the panel, and of its inner edge */
+  const playerPanelBottom = handY + cardHeight / 2
+  const playerPanelTop = playerPanelBottom - (playerPanelWidth * playerPanelEmHeight) / playerPanelEmWidth
+  /**
+   * First player card: 57.5 × 82.4 mm plus the shadow margin, above the panel of the player who has it, on its left edge
+   * (with the mat, it stays left of the printed circles of the swap)
+   */
+  const firstPlayerCardX = playerPanelLeft + cardWidth / 2
+  const firstPlayerCardY = playerPanelTop - 0.4 - cardHeight / 2
 
   return {
     columnPitch,
@@ -162,7 +183,9 @@ export function getTableLayout(playmat: boolean) {
     courtSpot,
     emissaryReserveX,
     emissaryReserveY,
+    playerPanel: { left: playerPanelLeft, width: playerPanelWidth, bottom: playerPanelBottom },
     firstPlayerCardX,
+    firstPlayerCardY,
     rightSideX,
     ryokanX,
     scorePadCenter,

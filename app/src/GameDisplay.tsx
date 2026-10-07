@@ -1,13 +1,13 @@
 import { css } from '@emotion/react'
 import { NaishiRules } from '@gamepark/naishi/NaishiRules'
-import { DevToolsHub, GameTable, GameTableNavigation, useRules } from '@gamepark/react-game'
+import { DevToolsHub, GameTable, useRules } from '@gamepark/react-game'
 import { getTableLayout, tableLayoutOf } from './locators/TableLayout'
 import { FinalTurnBanner } from './panels/FinalTurnBanner'
-import { TravellerChoicePanel } from './panels/TravellerChoicePanel'
-import { TutorialFreePlay } from './tutorial/TutorialFreePlay'
-import { naishiTutorial } from './tutorial/NaishiTutorial'
-import { TutorialUnzoom } from './tutorial/TutorialUnzoom'
 import { PlayerPanels } from './panels/PlayerPanels'
+import { TravellerChoicePanel } from './panels/TravellerChoicePanel'
+import { naishiTutorial } from './tutorial/NaishiTutorial'
+import { TutorialFreePlay } from './tutorial/TutorialFreePlay'
+import { TutorialUnzoom } from './tutorial/TutorialUnzoom'
 
 export function GameDisplay() {
   const rules = useRules<NaishiRules>()
@@ -20,7 +20,6 @@ export function GameDisplay() {
   return (
     <>
       <GameTable {...tableBounds} margin={margin} css={process.env.NODE_ENV === 'development' && tableBorder}>
-        <GameTableNavigation />
         <PlayerPanels />
         <FinalTurnBanner />
         <TravellerChoicePanel />

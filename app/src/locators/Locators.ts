@@ -108,11 +108,11 @@ class GiftLocator extends Locator {
   }
 }
 
-/** The First player card is beside the Hand of the player who has it */
+/** The First player card is above the panel of the player who has it */
 class FirstPlayerSpotLocator extends Locator {
   getCoordinates(location: Location, context: MaterialContext) {
-    const { firstPlayerCardX, handY } = tableLayoutOf(context)
-    return { x: firstPlayerCardX, y: rowY(handY, location.player, context) }
+    const { firstPlayerCardX, firstPlayerCardY } = tableLayoutOf(context)
+    return { x: firstPlayerCardX, y: rowY(firstPlayerCardY, location.player, context) }
   }
 }
 
