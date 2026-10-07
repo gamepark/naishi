@@ -6,12 +6,15 @@ import { Trans } from 'react-i18next'
 import Playmat from '../images/boards/playmat.jpg'
 import { CourtBoardHelp } from '../help/OtherHelps'
 import { isPlaymatDisplayed } from '../locators/PlaymatDisplay'
-import { playmatSize } from '../locators/TableLayout'
+import { emissaryReserveGap, playmatSize, tableLayout } from '../locators/TableLayout'
 import { ImageButton, symbolButtonRatio } from './ImageButton'
 import { symbolImage } from './symbolImages'
 
-/** Where the button to recall the Emissaries is, from the center of the mat (cm): at the bottom left, outside of the mat */
-const recallButton = { x: -25.5, y: 19.6 }
+/**
+ * The button to recall the Emissaries is on the mat, just above the row of the Emissaries' reserve (under the mat): on the left of the Line, so
+ * that its text (3 lines in French) is neither on the Line nor on the Hand. From the center of the mat (cm), and from the middle of the row for x.
+ */
+const recallButton = { dx: -0.5, y: 10.8 }
 
 /** The game mat (display choice of the subscribers): it replaces the Imperial Court board, and is under the River and the Lines */
 class PlaymatDescription extends BoardDescription {
@@ -30,6 +33,7 @@ class PlaymatDescription extends BoardDescription {
   getItemMenu(_item: MaterialItem, context: ItemContext, legalMoves: MaterialMove[]) {
     const recall = legalMoves.find(isCustomMoveType(CustomMoveType.RecallEmissaries))
     if (!recall) return null
+    const { emissaryReserveX, playmatCenter } = tableLayout()
     return (
       <ImageButton
         move={recall}
@@ -38,7 +42,7 @@ class PlaymatDescription extends BoardDescription {
         width={3}
         labelWidth={6}
         label={<Trans defaults="button.recall" />}
-        x={recallButton.x}
+        x={emissaryReserveX - emissaryReserveGap / 2 - playmatCenter.x + recallButton.dx}
         y={recallButton.y}
       />
     )

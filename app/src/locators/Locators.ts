@@ -58,13 +58,15 @@ class RiverDeckLocator extends DeckLocator {
   }
 }
 
-/** The 2 Emissaries a player still holds, in a column between the Line and the Hand */
+/** The 2 Emissaries a player still holds, in a column between the Line and the Hand, or with the mat in a row beside the Hand */
 class EmissaryReserveLocator extends ListLocator {
-  gap = { y: emissaryReserveGap }
+  getGap() {
+    return tableLayout().emissaryReserveInRow ? { x: -emissaryReserveGap } : { y: emissaryReserveGap }
+  }
 
   getCoordinates(location: Location, context: MaterialContext) {
-    const { emissaryReserveX, emissaryReserveY } = tableLayout()
-    return { x: emissaryReserveX, y: rowY(emissaryReserveY, location.player, context) - emissaryReserveGap / 2 }
+    const { emissaryReserveX, emissaryReserveY, emissaryReserveInRow } = tableLayout()
+    return { x: emissaryReserveX, y: rowY(emissaryReserveY, location.player, context) - (emissaryReserveInRow ? 0 : emissaryReserveGap / 2) }
   }
 }
 

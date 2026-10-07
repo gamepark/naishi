@@ -127,10 +127,14 @@ export function getTableLayout(playmat: boolean) {
     return { x: courtBoardCenter.x + offset.x, y: courtBoardCenter.y + offset.y }
   }
 
-  /** Emissaries of a player are beside their territory, between their Line and their Hand */
+  /**
+   * Emissaries of a player are beside their territory: in a column between their Line and their Hand, or with the mat in a row beside the top
+   * of the Hand, under the mat (outside of it). x of the first one, the closest to the territory: the second one is on its left.
+   */
   const emissaryReserveX = territoryLeftEdge - 1.5
-  /** Distance from the River of the middle of the 2 Emissaries: between the Line and the Hand, or under the mat (outside of it) */
-  const emissaryReserveY = playmat ? playmatSize.height / 2 + 0.5 + emissaryDiameter / 2 + emissaryReserveGap / 2 : (lineY + handY) / 2
+  const emissaryReserveInRow = playmat
+  /** Distance from the River of the middle of the 2 Emissaries */
+  const emissaryReserveY = playmat ? playmatSize.height / 2 + 0.5 + emissaryDiameter / 2 : (lineY + handY) / 2
   /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
   const rightSideBaseX = territoryRightEdge + 1 + 3.1
   // With the mat, they are moved to the right of its edge, so that they are not on the image
@@ -184,6 +188,7 @@ export function getTableLayout(playmat: boolean) {
     courtSpot,
     emissaryReserveX,
     emissaryReserveY,
+    emissaryReserveInRow,
     playerPanel: { left: playerPanelLeft, width: playerPanelWidth, bottom: playerPanelBottom },
     firstPlayerCardX,
     firstPlayerCardY,
