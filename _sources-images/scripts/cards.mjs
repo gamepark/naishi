@@ -4,7 +4,8 @@ const [S, OUT] = process.argv.slice(2)
 const L = 75, T = 75, W = 629, H = 879
 const base = 'full/55-cards-63x88-Naishi-recto-R5-FRONT', ext = 'full/14-cards-63x88-Naishi-EXT-LV-recto-R1'
 const pad = n => String(n).padStart(2, '0')
-async function card(src, dst, { erase = true } = {}) {
+// The number of copies of the card (« x4 », bottom left of the print file) is kept. `erase` wipes it: it was done before, and it is not any more.
+async function card(src, dst, { erase = false } = {}) {
   let img = sharp(src).extract({ left: L, top: T, width: W, height: H })
   const buf = await img.png().toBuffer()
   const { data, info } = await sharp(buf).raw().toBuffer({ resolveWithObject: true })
@@ -22,10 +23,13 @@ async function card(src, dst, { erase = true } = {}) {
   await sharp(data, { raw: { width: W, height: H, channels: 3 } }).jpeg({ quality: 85, mozjpeg: true }).toFile(dst)
 }
 const baseMap = { mountain: 1, naishi: 17, advisor: 19, fortress: 23, sentinel: 27, torii: 31, monk: 35, rice: 38, banner: 42, horseman: 43, ronin: 47, ninja: 49 }
-for (const [k, p] of Object.entries(baseMap)) await card(`${S}/${base}/p${pad(p)}.png`, `${OUT}/cards/base/${k}.jpg`)
+// The Mountain has no number of copies on the print file: it was cut correctly, it is not cut again
+for (const [k, p] of Object.entries(baseMap)) if (k !== 'mountain') await card(`${S}/${base}/p${pad(p)}.png`, `${OUT}/cards/base/${k}.jpg`)
 const legends = { naishi: 1, sentinel: 2, advisor: 3, horseman: 4, monk: 5, ronin: 6, ninja: 7 }
 for (const [k, p] of Object.entries(legends)) await card(`${S}/${ext}/p${pad(p)}.png`, `${OUT}/cards/legends/${k}.jpg`)
-for (let i = 1; i <= 6; i++) await card(`${S}/${ext}/p${pad(i + 7)}.png`, `${OUT}/cards/travellers/traveller-${i}.jpg`)
+// The Travellers, in the order of the pages of the print file
+const travellers = ['umbrella-lady', 'old-man', 'cherry-lady', 'girl', 'porter', 'samurai']
+for (const [i, name] of travellers.entries()) await card(`${S}/${ext}/p${pad(i + 8)}.png`, `${OUT}/cards/travellers/${name}.jpg`)
 await card(`${S}/${ext}/p14.png`, `${OUT}/cards/ryokan-4.jpg`, { erase: false })
 await card(`${S}/full/14-cards-63x88-Naishi-EXT-LV-verso-R1/p15.png`, `${OUT}/cards/ryokan-7.jpg`, { erase: false })
 await card(`${S}/full/back/p01.png`, `${OUT}/cards/back.jpg`, { erase: false })

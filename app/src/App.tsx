@@ -31,11 +31,13 @@ export function App() {
   )
 }
 
+export const logWidth = '21em'
+
 /** The last lines of the history, on top of the table, at the right under the header */
 const liveLogCss = css`
   position: absolute;
   right: 1em;
   top: 8em;
-  width: 45em;
+  width: ${logWidth};
   pointer-events: none;
 `

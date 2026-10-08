@@ -1,3 +1,4 @@
+import { CourtAction, courtSpotsCount } from '@gamepark/naishi/material/CourtAction'
 import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
@@ -70,9 +71,21 @@ class EmissaryReserveLocator extends ListLocator {
   }
 }
 
+/** A drop area where a click plays the move to the location: the alternative to the drag and drop */
+class ClickableDropArea extends DropAreaDescription {
+  placeOnShortClick = true
+}
+
 /** Each printed circle of the Imperial Court board or of the game mat: id = CourtAction, x = the spot among the ones of that action */
 class CourtSpotLocator extends Locator {
-  locationDescription = new DropAreaDescription({ width: 1.9, height: 1.9, borderRadius: 0.95 })
+  locationDescription = new ClickableDropArea({ width: 1.9, height: 1.9, borderRadius: 0.95 })
+
+  /** The circles are always there, so that a click on one sends the Emissary to it (they do nothing when no Emissary can go there) */
+  getLocations() {
+    return Object.entries(courtSpotsCount).flatMap(([action, count]) =>
+      Array.from({ length: count }, (_, x) => ({ type: LocationType.CourtSpot, id: Number(action) as CourtAction, x }))
+    )
+  }
 
   getCoordinates(location: Location) {
     const { x, y } = tableLayout().courtSpot(location.id, location.x ?? 0)
