@@ -1,10 +1,8 @@
 export enum LocationType {
-  /** A player's Hand: 5 slots (x = position), hidden to the opponent */
+  /** A player's Hand: 5 slots (x = position), hidden to the opponent until it is revealed at the end of the game (rotation = true) */
   Hand = 1,
   /** A player's Line: 5 slots (x = position), face up */
   Line,
-  /** At the end of the game, the Hand is revealed under the Line: same slots as the Hand, face up */
-  FinalHand,
   /** The revealed card of each of the 5 River piles (x = pile) */
   River,
   /** The face down cards of a River pile, under the revealed one (id = pile, x = order in the pile, the top has the highest x) */

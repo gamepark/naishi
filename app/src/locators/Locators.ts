@@ -164,7 +164,6 @@ class DiscardLocator extends PileLocator {
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
   [LocationType.Hand]: new TerritoryRowLocator('hand'),
   [LocationType.Line]: new TerritoryRowLocator('line'),
-  [LocationType.FinalHand]: new TerritoryRowLocator('hand'),
   [LocationType.River]: new RiverLocator(),
   [LocationType.RiverDeck]: new RiverDeckLocator(),
   [LocationType.Gift]: new GiftLocator(),

@@ -2,6 +2,7 @@ import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { NaishiPlayerRule } from './NaishiPlayerRule'
+import { RuleId } from './RuleId'
 
 /**
  * Traveller effect: develop the territory again. The card of the pile of the card that was just developed is not revealed yet,
@@ -17,9 +18,8 @@ export class DevelopFromTravellerRule extends NaishiPlayerRule {
   }
 
   afterItemMove(move: ItemMove): MaterialMove[] {
-    if (isMoveItemType(MaterialType.Card)(move)) {
-      if (move.location.type === LocationType.Discard) return this.afterDiscard(move)
-      if (move.location.type === LocationType.Line || move.location.type === LocationType.Hand) return this.afterDevelop(move)
+    if (isMoveItemType(MaterialType.Card)(move) && (move.location.type === LocationType.Line || move.location.type === LocationType.Hand)) {
+      return [...this.afterDevelop(move), this.startRule(RuleId.ResolveTravellerEffects)]
     }
     return []
   }

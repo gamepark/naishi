@@ -30,17 +30,15 @@ export class ExchangeCardsRule extends SimultaneousRule<number, MaterialType, Lo
     const cards = this.material(MaterialType.Card)
     const gifts = cards.location(LocationType.Gift)
     const moves: MaterialMove[] = []
-    const handIndexes: number[][] = []
     for (const player of this.game.players) {
       const giver = this.game.players.find((other) => other !== player)!
       // The received card takes the slot of the card the player gave
       const vacatedSlot = gifts.player(giver).getItem()!.location.x
-      const gift = gifts.player(player)
-      moves.push(gift.moveItem({ type: LocationType.Hand, player, x: vacatedSlot }))
-      handIndexes.push([...cards.location(LocationType.Hand).player(player).getIndexes(), ...gift.getIndexes()])
+      moves.push(gifts.player(player).moveItem({ type: LocationType.Hand, player, x: vacatedSlot }))
     }
-    for (const indexes of handIndexes) {
-      moves.push(cards.index(indexes).shuffle())
+    // The Hand of each player, with the card they receive
+    for (const player of this.game.players) {
+      moves.push(cards.location((location) => location.type === LocationType.Hand || location.type === LocationType.Gift).player(player).shuffle())
     }
     moves.push(this.startPlayerTurn(RuleId.PlayerTurn, this.game.players[0]))
     return moves

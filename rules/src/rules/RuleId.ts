@@ -15,7 +15,7 @@ export enum RuleId {
   SwapTerritoryCards,
   /** Traveller effect: develop the territory again */
   DevelopFromTraveller,
-  /** The end of the game: Hands are revealed under the Lines */
+  /** The end of the game: Hands are revealed, under the Lines */
   EndOfGame,
   /** Each Ninja chooses the character it copies */
   ChooseNinjaCopy

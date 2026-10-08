@@ -1,10 +1,11 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, ItemMove, MaterialMove } from '@gamepark/rules-api'
+import { riverPiles } from '../material/CardId'
 import { CourtAction, courtSpotsCount } from '../material/CourtAction'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { Memory } from './Memory'
-import { getEmptyPiles, NaishiPlayerRule } from './NaishiPlayerRule'
+import { getEmptyPiles, NaishiPlayerRule, revealMissingCards } from './NaishiPlayerRule'
 import { RuleId } from './RuleId'
 
 /**
@@ -21,10 +22,13 @@ export class PlayerTurnRule extends NaishiPlayerRule {
     const additionalActionDone = this.remind<boolean | undefined>(Memory.AdditionalActionDone)
     const moves: MaterialMove[] = []
     if (!mainActionDone) {
-      moves.push(...this.getDevelopMoves())
-      if (!additionalActionDone) {
-        moves.push(...this.getDecreeMoves(), ...this.getRecallMoves(), ...this.getDeclareEndMoves())
-      }
+      const mainActions = [
+        ...this.getDevelopMoves(),
+        ...(additionalActionDone ? [] : [...this.getDecreeMoves(), ...this.getRecallMoves(), ...this.getDeclareEndMoves()])
+      ]
+      // No action is possible (the River is empty during the last turn, no Emissary to recall, the decree is taken): the player can only pass
+      if (mainActions.length === 0) return [this.customMove(CustomMoveType.EndTurn)]
+      moves.push(...mainActions)
     }
     if (!additionalActionDone) {
       moves.push(...this.getAdditionalActionMoves())
@@ -62,9 +66,19 @@ export class PlayerTurnRule extends NaishiPlayerRule {
     return this.getSpotMoves(CourtAction.Decree)
   }
 
-  /** Additional actions: swap 2 cards, or discard 2 cards of the River (2 different piles: it needs at least 2 cards there) */
+  /** Additional actions: swap 2 cards, or discard 2 cards of the River */
   getAdditionalActionMoves(): MaterialMove[] {
-    return [...this.getSpotMoves(CourtAction.Swap), ...(this.river.length >= 2 ? this.getSpotMoves(CourtAction.DiscardRiver) : [])]
+    return [...this.getSpotMoves(CourtAction.Swap), ...(this.canDiscardRiverCards() ? this.getSpotMoves(CourtAction.DiscardRiver) : [])]
+  }
+
+  /**
+   * Discarding 2 cards of the River needs 2 piles that are not empty. Before the development, a card must be left to develop: otherwise
+   * the player could do no main action at all, since the additional action is only possible with a development.
+   */
+  canDiscardRiverCards(): boolean {
+    if (riverPiles - getEmptyPiles((type) => this.material(type)).length < 2) return false
+    if (this.remind<boolean | undefined>(Memory.MainActionDone)) return true
+    return this.material(MaterialType.Card).location((location) => location.type === LocationType.River || location.type === LocationType.RiverDeck).length > 2
   }
 
   /** Get back all the Emissaries from the Imperial Court board (except the one on the decree), all at once */
@@ -104,12 +118,13 @@ export class PlayerTurnRule extends NaishiPlayerRule {
       }
     }
     if (isMoveItemType(MaterialType.Card)(move)) {
-      if (move.location.type === LocationType.Discard) return this.afterDiscard(move)
       if (move.location.type === LocationType.Line || move.location.type === LocationType.Hand) {
         this.memorize(Memory.MainActionDone, true)
         const moves = this.afterDevelop(move)
-        // With the extension the effects of the Travellers come first: the turn ends when they are resolved
-        return !this.extension && this.isTurnOver() ? [...moves, ...this.endTurn()] : moves
+        // The effects of the Travellers come first: the next card is revealed, and the turn may end, once they are resolved
+        if (this.hasPendingEffects()) return [...moves, this.startRule(RuleId.ResolveTravellerEffects)]
+        moves.push(...revealMissingCards((type) => this.material(type)))
+        return this.isTurnOver() ? [...moves, ...this.endTurn()] : moves
       }
     }
     return []

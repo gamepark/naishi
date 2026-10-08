@@ -70,3 +70,5 @@ Décisions à trancher. Une fois tranchée, la décision est notée en commentai
     → Oui
 24. **Ninja légendaire.** Il copie un personnage adverse (jamais une légende ni un ninja). S'il copie un personnage que je n'ai pas, il ajoute un type pour mon Ronin de base.
     → Oui ; Il est à noter que si l'adversaire n'a pas de personnage, je ne peux rien compier, et donc le ninja légendaire vaudra 0.
+25. **Ronin légendaire et ninjas.** Pour la plus longue série de cartes identiques, un ninja compte-t-il comme le personnage qu'il copie ?
+    → Oui : un ninja peut copier un personnage que l'on a déjà, ce qui rallonge la série de cartes identiques.

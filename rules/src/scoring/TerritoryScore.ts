@@ -136,10 +136,10 @@ export function scoreTerritory(grid: TerritoryGrid, ryokan?: 4 | 7): TerritorySc
   const types = roninTypes.filter((type) => typesPresent.has(type)).length
 
   // Largest series of identical cards (same icon) for the Legendary Ronin: characters and provinces. A Legend has the icon of the card it replaces
-  // (the Legendary Monk has the icons of a Monk and of a Torii), and the Ninjas have their own icon.
+  // (the Legendary Monk has the icons of a Monk and of a Torii). A Ninja is the character it copies (publisher's decision), or a Ninja without any.
   const identical = new Map<CardId, number>()
   for (const cell of cells) {
-    const icons = isNinja(cell.id) ? [CardId.Ninja] : cell.types
+    const icons = isNinja(cell.id) && cell.types.length === 0 ? [CardId.Ninja] : cell.types
     for (const icon of icons) {
       if (characters.includes(icon) || provinces.includes(icon)) identical.set(icon, (identical.get(icon) ?? 0) + 1)
     }

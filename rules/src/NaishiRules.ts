@@ -1,4 +1,15 @@
-import { CompetitiveScore, FillGapStrategy, hideItemId, hideItemIdToOthers, MaterialGame, MaterialMove, PositiveSequenceStrategy, SecretMaterialRules, TimeLimit } from '@gamepark/rules-api'
+import {
+  CompetitiveScore,
+  FillGapStrategy,
+  hideItemId,
+  hideItemIdToOthers,
+  HidingSecretsStrategy,
+  MaterialGame,
+  MaterialMove,
+  PositiveSequenceStrategy,
+  SecretMaterialRules,
+  TimeLimit
+} from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ChooseNinjaCopyRule } from './rules/ChooseNinjaCopyRule'
@@ -13,6 +24,9 @@ import { RuleId } from './rules/RuleId'
 import { SwapCardsRule } from './rules/SwapCardsRule'
 import { SwapTerritoryCardsRule } from './rules/SwapTerritoryCardsRule'
 import { getPlayerScore } from './scoring/getPlayerScore'
+
+/** A Hand is hidden to the opponent until it is revealed at the end of the game */
+const hideHandToOthers: HidingSecretsStrategy<number, LocationType> = (item, player) => (item.location.rotation ? [] : hideItemIdToOthers(item, player))
 
 /**
  * This class implements the rules of the board game.
@@ -55,7 +69,7 @@ export class NaishiRules
     [MaterialType.Card]: {
       [LocationType.RiverDeck]: hideItemId,
       [LocationType.Gift]: hideItemId,
-      [LocationType.Hand]: hideItemIdToOthers
+      [LocationType.Hand]: hideHandToOthers
     }
   }
 

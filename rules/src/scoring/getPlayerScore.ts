@@ -5,7 +5,7 @@ import { MaterialType } from '../material/MaterialType'
 import { Memory } from '../rules/Memory'
 import { TerritoryCard, TerritoryGrid, TerritoryScore, scoreTerritory } from './TerritoryScore'
 
-/** The 2 × 5 grid of the territory of a player at the end of the game: the Line, and the Hand revealed under it */
+/** The 2 × 5 grid of the territory of a player: the Line, and the Hand under it */
 export function getTerritoryGrid(rules: MaterialRules<number, MaterialType, LocationType>, player: number): TerritoryGrid {
   const cards = rules.material(MaterialType.Card)
   const copies = rules.remind<Record<number, number | null> | undefined>(Memory.NinjaCopies) ?? {}
@@ -20,7 +20,7 @@ export function getTerritoryGrid(rules: MaterialRules<number, MaterialType, Loca
         const copiedIndex = copies[index]
         return { id: item.id!, copy: copiedIndex === undefined || copiedIndex === null ? copiedIndex : cards.getItem<CardId>(copiedIndex).id }
       })
-  return [row(LocationType.Line), row(LocationType.FinalHand)]
+  return [row(LocationType.Line), row(LocationType.Hand)]
 }
 
 /** The points of the Ryokan if the player has it: 4 on its face up side, 7 flipped */

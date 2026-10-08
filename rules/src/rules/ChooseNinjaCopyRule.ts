@@ -18,7 +18,7 @@ export class ChooseNinjaCopyRule extends SimultaneousRule<number, MaterialType, 
   getTerritory(player: number) {
     return this.material(MaterialType.Card)
       .player(player)
-      .location((location) => location.type === LocationType.Line || location.type === LocationType.FinalHand)
+      .location((location) => location.type === LocationType.Line || location.type === LocationType.Hand)
   }
 
   getCopies(): NinjaCopies {

@@ -403,7 +403,6 @@ const PlaceNote = ({ type }: { type?: LocationType }) => {
       )
     case LocationType.Line:
     case LocationType.Hand:
-    case LocationType.FinalHand:
       return (
         <Section title="help.where.territory.name">
           <P k="help.where.territory" />

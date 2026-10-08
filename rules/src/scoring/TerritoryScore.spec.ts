@@ -138,6 +138,11 @@ describe('Legends & Travellers', () => {
     expect(scoreTerritory(grid([LR, LegendMonk, Monk, Monk, M], [M, M, M, M, M])).byType[O]).toBe(8)
   })
 
+  it('Legendary Ronin: a Ninja is identical to the character it copies', () => {
+    expect(scoreTerritory(grid([LR, A, A, { id: X, copy: A }, M], [M, M, M, M, M])).byType[O]).toBe(8)
+    expect(scoreTerritory(grid([LR, A, A, { id: LX, copy: A }, A], [M, M, M, M, M])).byType[O]).toBe(15)
+  })
+
   it('Legendary Ninja: copies a character of the opponent, and counts as one more type for the Ronin', () => {
     const score = scoreTerritory(grid([O, N, A, F, S], [T, K, R, { id: LX, copy: H }, M]))
     expect(score.byType[O]).toBe(15) // 8 types + the Horseman copied

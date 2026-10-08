@@ -3,6 +3,7 @@ import { CardId, isTraveller, riverPiles } from '../material/CardId'
 import { CourtAction } from '../material/CourtAction'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { NaishiOptions } from '../NaishiOptions'
 import { TravellerEffect, travellerEffects, TravellerTrigger } from '../material/Traveller'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
@@ -10,7 +11,7 @@ import { RuleId } from './RuleId'
 type NaishiMaterial = Material<number, MaterialType, LocationType>
 
 /** The move that reveals the next card of a River pile, if there is one */
-export function revealNextCard(material: (type: MaterialType) => NaishiMaterial, pile: number): MaterialMove[] {
+function revealNextCard(material: (type: MaterialType) => NaishiMaterial, pile: number): MaterialMove[] {
   const deck = material(MaterialType.Card).location(LocationType.RiverDeck).locationId(pile)
   return deck.length > 0 ? [deck.deck().dealOne({ type: LocationType.River, x: pile })] : []
 }
@@ -96,41 +97,43 @@ export abstract class NaishiPlayerRule extends PlayerTurnRule<number, MaterialTy
     return []
   }
 
-  /** The card replaced by a development is known once discarded: a Traveller that leaves the territory has its effect */
-  afterDiscard(move: ItemMove): MaterialMove[] {
-    if (isMoveItemType(MaterialType.Card)(move) && move.location.type === LocationType.Discard) {
-      const id = this.material(MaterialType.Card).getItem<CardId>(move.itemIndex).id!
-      if (travellerEffects[id]?.trigger === TravellerTrigger.Leave) {
-        this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, id])
-      }
-    }
-    return []
-  }
-
   /** Legends & Travellers: the effects of the Travellers are resolved after a development */
   get extension(): boolean {
-    return (this.game.options as { legendsAndTravellers?: boolean } | undefined)?.legendsAndTravellers === true
+    const options: NaishiOptions | undefined = this.game.options
+    return options?.legendsAndTravellers === true
   }
 
   /**
-   * After a development: the Ryokan goes to a player who gets a Traveller, and the effects of the Travellers that entered or left the
-   * territory can be used (see ResolveTravellerEffectsRule). The next card of the pile is revealed afterwards.
+   * After a development: the effects of the Traveller that left the territory and of the Traveller that entered it can be used (see
+   * ResolveTravellerEffectsRule), and the Ryokan goes to a player who gets a Traveller.
+   * The replaced card is still in the slot: the discard of beforeDevelop is played after the development.
    */
   afterDevelop(move: MoveItem): MaterialMove[] {
-    const pile = move.location.x!
-    if (!this.extension) return revealNextCard((type) => this.material(type), pile)
-    const moves: MaterialMove[] = []
-    const entered = this.material(MaterialType.Card).getItem<CardId>(move.itemIndex).id!
+    if (!this.extension) return []
+    const cards = this.material(MaterialType.Card)
+    const { type, player, x } = move.location
+    const left = cards
+      .location((location) => location.type === type && location.player === player && location.x === x)
+      .filter((_, index) => index !== move.itemIndex)
+      .getItem<CardId>()!.id!
+    if (travellerEffects[left]?.trigger === TravellerTrigger.Leave) {
+      this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, left])
+    }
+    const entered = cards.getItem<CardId>(move.itemIndex).id!
     if (entered === CardId.Samurai) {
       // The Samurai takes the Ryokan wherever it is and puts it on its 7 points side: there is nothing to choose, it is done at once
-      moves.push(...this.getRyokanMoves(true))
-    } else if (isTraveller(entered)) {
-      moves.push(...this.getRyokanMoves(false))
-      if (travellerEffects[entered]?.trigger === TravellerTrigger.Enter) {
-        this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, entered])
-      }
+      return this.getRyokanMoves(true)
     }
-    return [...moves, this.startRule(RuleId.ResolveTravellerEffects)]
+    if (!isTraveller(entered)) return []
+    if (travellerEffects[entered]?.trigger === TravellerTrigger.Enter) {
+      this.memorize<CardId[]>(Memory.PendingEffects, (pending = []) => [...pending, entered])
+    }
+    return this.getRyokanMoves(false)
+  }
+
+  /** Effects of Travellers wait to be used or ignored */
+  hasPendingEffects(): boolean {
+    return this.remind<CardId[] | undefined>(Memory.PendingEffects) !== undefined
   }
 
   /**
@@ -156,8 +159,6 @@ export abstract class NaishiPlayerRule extends PlayerTurnRule<number, MaterialTy
         return this.getRecalledEmissaries().length > 0
       case TravellerEffect.Develop:
         return this.river.length > 0
-      case TravellerEffect.RyokanSide7:
-        return this.getRyokanMoves(true).length > 0
       default:
         return false
     }

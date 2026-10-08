@@ -53,8 +53,6 @@ export class ResolveTravellerEffectsRule extends NaishiPlayerRule {
         return [this.startRule(RuleId.DevelopFromTraveller)]
       case TravellerEffect.RecallEmissaries:
         return [this.getRecalledEmissaries().moveItemsAtOnce({ type: LocationType.EmissaryReserve, player: this.player })]
-      case TravellerEffect.RyokanSide7:
-        return this.getRyokanMoves(true)
       default:
         return []
     }

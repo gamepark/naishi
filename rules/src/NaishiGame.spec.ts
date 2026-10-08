@@ -8,6 +8,7 @@ import { CourtAction } from './material/CourtAction'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { CustomMoveType } from './rules/CustomMoveType'
+import { Memory } from './rules/Memory'
 import { RuleId } from './rules/RuleId'
 import { getPlayerScore } from './scoring/getPlayerScore'
 
@@ -57,11 +58,10 @@ const cardsOf = (game: Game, type: LocationType, player?: number) => {
 function checkInvariants(game: Game) {
   const rules = new NaishiRules(game)
   const cards = rules.material(MaterialType.Card)
-  const inPlay = game.rule?.id === RuleId.EndOfGame || game.rule?.id === RuleId.ChooseNinjaCopy
   const slots = new Set<string>()
   for (const item of cards.getItems()) {
     const { type, player, x, id } = item.location
-    if ([LocationType.Hand, LocationType.Line, LocationType.FinalHand, LocationType.River].includes(type)) {
+    if ([LocationType.Hand, LocationType.Line, LocationType.River].includes(type)) {
       const key = `${type}/${player}/${x}`
       expect(slots.has(key), `two cards in ${key}`).toBe(false)
       slots.add(key)
@@ -75,7 +75,6 @@ function checkInvariants(game: Game) {
       expect(cardsOf(game, LocationType.Line, player).length).toBe(5)
     }
   }
-  expect(inPlay || true).toBe(true)
 }
 
 describe('Naishi game', () => {
@@ -170,6 +169,31 @@ describe('Naishi game', () => {
     expect(cardsOf(game, LocationType.RiverDeck).length).toBe(25 - 2)
   })
 
+  it('additional action: the River cards cannot be discarded before developing when no card would be left to develop', () => {
+    const game = newGame()
+    exchangeCards(game)
+    // only 2 River cards are left, in 2 piles without any card under them
+    game.items[MaterialType.Card] = game.items[MaterialType.Card]!.filter(
+      (item) => item.location.type !== LocationType.RiverDeck && !(item.location.type === LocationType.River && item.location.x! >= 2)
+    )
+    expect(new NaishiRules(game).getLegalMoves(1).some(isSpotMove(CourtAction.DiscardRiver))).toBe(false)
+    // with one more card under a pile, it will be revealed and developed
+    game.items[MaterialType.Card]!.push({ id: CardId.Rice, location: { type: LocationType.RiverDeck, id: 0, x: 0 } })
+    expect(new NaishiRules(game).getLegalMoves(1).some(isSpotMove(CourtAction.DiscardRiver))).toBe(true)
+  })
+
+  it('a player who can do no action at all can only pass', () => {
+    const game = newGame()
+    exchangeCards(game)
+    // the River is empty and the player has no Emissary on the court: only the decree remains, then nothing
+    game.items[MaterialType.Card] = game.items[MaterialType.Card]!.filter((item) => item.location.type !== LocationType.RiverDeck && item.location.type !== LocationType.River)
+    game.items[MaterialType.Emissary]!.find((item) => item.id === 2)!.location = { type: LocationType.CourtSpot, id: CourtAction.Decree, x: 0 }
+    game.items[MaterialType.Emissary] = game.items[MaterialType.Emissary]!.filter((item) => item.id !== 1)
+    // the last turn of the game: the end cannot be declared
+    game.memory[Memory.FinalTurn] = 1
+    expect(new NaishiRules(game).getLegalMoves(1)).toEqual([expect.objectContaining({ type: CustomMoveType.EndTurn })])
+  })
+
   it('imperial decree: swaps a card with the one of the opponent, and blocks the Emissary', () => {
     const game = newGame()
     exchangeCards(game)
@@ -233,7 +257,12 @@ describe('Naishi game', () => {
         // at the end: Lines and Hands revealed
         for (const player of game.players) {
           expect(cardsOf(game, LocationType.Line, player).length).toBe(5)
-          expect(cardsOf(game, LocationType.FinalHand, player).length).toBe(5)
+          expect(cardsOf(game, LocationType.Hand, player).length).toBe(5)
+          expect(cardsOf(game, LocationType.Hand, player).getItems().every((item) => item.location.rotation === true)).toBe(true)
+          // the opponent sees the revealed Hand
+          const opponent = game.players.find((other) => other !== player)!
+          const view = new NaishiRules(game).getView(opponent)
+          expect(view.items[MaterialType.Card]!.filter((item) => item.location.type === LocationType.Hand && item.location.player === player).every((item) => item.id !== undefined)).toBe(true)
           const score = getPlayerScore(new NaishiRules(game), player)
           expect(Number.isFinite(score.total)).toBe(true)
         }

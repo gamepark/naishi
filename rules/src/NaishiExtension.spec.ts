@@ -212,11 +212,13 @@ describe('Legends & Travellers', () => {
     // the Old Man left and the Cherry Lady entered: 2 effects to choose from
     const choices = rules(game).getLegalMoves(1).filter((move) => isCustomMoveType(CustomMoveType.UseTravellerEffect)(move))
     expect(choices).toHaveLength(2)
-    // the Cherry Lady entered first (index 0), then the Old Man left (index 1): the player starts with the Old Man
+    // the Old Man left first (index 0), then the Cherry Lady entered (index 1): the player starts with the Cherry Lady
     play(game, customMove(game, CustomMoveType.UseTravellerEffect, 1))
-    expect(emissariesOnBoard(game)).toBe(0)
+    expect(game.rule).toMatchObject({ id: RuleId.SwapTerritoryCards })
+    play(game, rules(game).getLegalMoves(1)[0])
     expect(game.rule).toMatchObject({ id: RuleId.ResolveTravellerEffects })
-    play(game, customMove(game, CustomMoveType.IgnoreTravellerEffect, 0))
+    play(game, customMove(game, CustomMoveType.UseTravellerEffect, 0))
+    expect(emissariesOnBoard(game)).toBe(0)
     expect(game.rule).toMatchObject({ id: RuleId.PlayerTurn })
   })
 })
