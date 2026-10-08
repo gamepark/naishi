@@ -63,13 +63,16 @@ export function turnedCourtSpotOffset({ x, y }: { x: number; y: number }) {
   return { x: y, y: -x }
 }
 
-/** Game mat: the 535 × 340 mm print file */
-export const playmatSize = { width: 53.5, height: 34 }
+/** Game mat: the 340 × 535 mm print file, upright (the Imperial Court on top) */
+export const playmatSize = { width: 34, height: 53.5 }
+/** The mat is turned 90° counterclockwise: the Imperial Court is on the left, it is as wide as its image is high */
+export const playmatRotation = -90
+export const playmatFootprint = { width: playmatSize.height, height: playmatSize.width }
 /** On the mat, the printed frames of the River are 8 cm apart, and the middle one is 5.53 cm to the right of the center of the mat */
 const playmatColumnPitch = 8
 const playmatRiverOffsetX = 5.53
 
-/** Center of each printed circle of the game mat, relative to the center of the mat (cm, measured on the print file) */
+/** Center of each printed circle of the game mat, relative to the center of the mat once turned (cm, measured on the print file) */
 export const playmatSpotOffsets: Record<CourtAction, { x: number; y: number }[]> = {
   [CourtAction.Decree]: [{ x: -19.14, y: -0.37 }],
   [CourtAction.DiscardRiver]: [
@@ -112,7 +115,7 @@ export function getTableLayout(playmat: boolean) {
   const territoryRightEdge = -firstColumnX + cardWidth / 2
 
   // The Hands are under the Lines, and outside of the mat
-  const handY = playmat ? playmatSize.height / 2 + 0.5 + cardHeight / 2 : lineY + rowPitch
+  const handY = playmat ? playmatFootprint.height / 2 + 0.5 + cardHeight / 2 : lineY + rowPitch
 
   const courtBoardCenter = { x: territoryLeftEdge - 1.2 - courtBoardFootprint.width / 2, y: riverY }
   const playmatCenter = { x: -playmatRiverOffsetX, y: riverY }
@@ -134,11 +137,11 @@ export function getTableLayout(playmat: boolean) {
   const emissaryReserveX = territoryLeftEdge - 1.5
   const emissaryReserveInRow = playmat
   /** Distance from the River of the middle of the 2 Emissaries */
-  const emissaryReserveY = playmat ? playmatSize.height / 2 + 0.5 + emissaryDiameter / 2 : (lineY + handY) / 2
+  const emissaryReserveY = playmat ? playmatFootprint.height / 2 + 0.5 + emissaryDiameter / 2 : (lineY + handY) / 2
   /** On the right of the territory: the discard pile beside the River, the card given at the beginning beside the Line, and the owned Ryokan */
   const rightSideBaseX = territoryRightEdge + 1 + 3.1
   // With the mat, they are moved to the right of its edge, so that they are not on the image
-  const rightSideX = playmat ? Math.max(rightSideBaseX, playmatCenter.x + playmatSize.width / 2 + 0.5 + cardWidth / 2) : rightSideBaseX
+  const rightSideX = playmat ? Math.max(rightSideBaseX, playmatCenter.x + playmatFootprint.width / 2 + 0.5 + cardWidth / 2) : rightSideBaseX
   /** Ryokan: off-play spot, beside the discard pile */
   const ryokanX = rightSideX + cardWidth + columnGap
   /** A line under the block is left for the points of the Ryokan */
@@ -150,7 +153,7 @@ export function getTableLayout(playmat: boolean) {
 
   /** The table is centered on the middle of the River: the bounds are symmetrical */
   const courtExtent = playmat
-    ? [playmatCenter.x - playmatSize.width / 2, playmatCenter.x + playmatSize.width / 2]
+    ? [playmatCenter.x - playmatFootprint.width / 2, playmatCenter.x + playmatFootprint.width / 2]
     : [courtBoardCenter.x - courtBoardFootprint.width / 2, courtBoardCenter.x + courtBoardFootprint.width / 2]
   const extents = [
     ...courtExtent,

@@ -3,7 +3,7 @@ import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
 import { Location } from '@gamepark/rules-api'
-import { courtBoardRotation, emissaryReserveGap, lineY, riverY, rowY, setAsideGap, tableLayout } from './TableLayout'
+import { courtBoardRotation, emissaryReserveGap, lineY, playmatRotation, riverY, rowY, setAsideGap, tableLayout } from './TableLayout'
 import { SwapDropAreaDescription } from './SwapDropAreaDescription'
 
 const riverDeckGap = { x: -0.08, y: -0.2 }
@@ -109,6 +109,8 @@ class CourtBoardLocator extends Locator {
 
 /** The game mat */
 class PlaymatLocator extends Locator {
+  rotateZ = playmatRotation
+
   getCoordinates() {
     return tableLayout().playmatCenter
   }
