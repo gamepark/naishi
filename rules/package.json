@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/naishi",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The rules of Naishi adapted for Game Park",
   "sideEffects": false,
   "type": "module",
