@@ -4,6 +4,7 @@ import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { PLATFORM_URI } from '@gamepark/react-client'
 import { MaterialHelpProps, PlayMoveButton, ThemeButton } from '@gamepark/react-game'
 import { MaterialMoveBuilder } from '@gamepark/rules-api'
+import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import Board from '../images/boards/board.png'
 import { setPlaymatPreference, usePlaymatDisplayed, useSubscriber } from '../locators/PlaymatDisplay'
@@ -28,7 +29,7 @@ const BoardCrop = ({ x, y, width, height, scale = 0.012 }: { x: number; y: numbe
 )
 
 /** An action of the Imperial Court: its pictogram, and what it does */
-const CourtAction = ({ crop, title, text }: { crop: JSX.Element; title: string; text: string }) => {
+const CourtAction = ({ crop, title, text }: { crop: ReactElement; title: string; text: string }) => {
   const { t } = useTranslation()
   return (
     <div css={actionCss}>

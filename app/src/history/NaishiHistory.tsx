@@ -5,7 +5,7 @@ import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { ChooseNinjaCopyData, CustomMoveType, SwapCardsData } from '@gamepark/naishi/rules/CustomMoveType'
 import { RuleId } from '@gamepark/naishi/rules/RuleId'
 import { LogDescription, MoveComponentContext, MoveComponentProps, usePlayerName } from '@gamepark/react-game'
-import { CustomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, ItemMove, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { CustomMove, isCustomMoveType, isMoveItemType, isMoveItemTypeAtOnce, MaterialGame, MaterialItem, MaterialMove, MoveItem } from '@gamepark/rules-api'
 import { Trans, useTranslation } from 'react-i18next'
 
 type Props = MoveComponentProps<MaterialMove, number>
@@ -29,7 +29,7 @@ const Line = ({ text, player, cards = {}, values = {} }: { text: string; player?
 
 /** The card of the River that goes to the territory, and the card of the territory that it replaces */
 const Develop = ({ move, context }: Props) => {
-  const { itemIndex, location } = move as ItemMove & { itemIndex: number }
+  const { itemIndex, location } = move as MoveItem
   const items = cardsOf(context.game)
   const replaced = items.find((item) => item.location.type === location.type && item.location.player === location.player && item.location.x === location.x)
   const row = location.type === LocationType.Line ? 'line' : 'hand'
@@ -38,7 +38,7 @@ const Develop = ({ move, context }: Props) => {
 
 /** An Emissary of the player goes to the Imperial Court */
 const Emissary = ({ move, context }: Props) => {
-  const { itemIndex, location } = move as ItemMove & { itemIndex: number }
+  const { itemIndex, location } = move as MoveItem
   const owner = context.game.items[MaterialType.Emissary]?.[itemIndex]?.id as number | undefined
   return <Line text={`history.emissary.${location.id as CourtAction}`} player={owner} />
 }
@@ -50,12 +50,12 @@ const Swap = ({ move, context }: Props) => {
 }
 
 const DiscardRiver = ({ move, context }: Props) => {
-  const { itemIndex } = move as ItemMove & { itemIndex: number }
+  const { itemIndex } = move as MoveItem
   return <Line text="history.discard" player={turnPlayer(context)} cards={{ card: cardsOf(context.game)[itemIndex]?.id }} />
 }
 
 const Ryokan = ({ move }: Props) => {
-  const { location } = move as ItemMove
+  const { location } = move as MoveItem
   return <Line text={location.rotation ? 'history.ryokan.7' : 'history.ryokan.4'} player={location.player} />
 }
 
@@ -66,7 +66,7 @@ const NinjaCopy = ({ move, context }: Props) => {
 }
 
 const Gift = ({ move, context }: Props) => {
-  const { location } = move as ItemMove
+  const { location } = move as MoveItem
   // The card is given to the player of the location: it is given by the other one
   return <Line text="history.give" player={context.game.players.find((player: number) => player !== location.player)} />
 }
