@@ -33,7 +33,7 @@ export function App() {
 
 export const logWidth = '22em'
 
-/** The last lines of the history, at the right under the header: 2 lines per message, over the empty top right corner of the table if needed */
+/** The last lines of the history, at the right under the header: 2 lines per message, over the empty top right corner of the table (no margin is kept for it) */
 const liveLogCss = css`
   position: absolute;
   right: 1em;

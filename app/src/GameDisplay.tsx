@@ -13,7 +13,7 @@ export function GameDisplay() {
   const { tableBounds } = getTableLayout(usePlaymatDisplayed())
   return (
     <>
-      <GameTable {...tableBounds} margin={tableMargin} css={process.env.NODE_ENV === 'development' && tableBorder}>
+      <GameTable {...tableBounds} css={process.env.NODE_ENV === 'development' && tableBorder}>
         <PlayerPanels />
         <FinalTurnBanner />
         <TravellerChoicePanel />
@@ -24,9 +24,6 @@ export function GameDisplay() {
     </>
   )
 }
-
-/** Margin (1% of the height of the screen) around the table: the room of the header at the top, and of the history (logs) at the right, with the same room at the left to keep the table centered */
-const tableMargin = { top: 7, left: 30, right: 30, bottom: 0 }
 
 const tableBorder = css`
   border: 1px solid white;
