@@ -82,7 +82,22 @@ export class NaishiRules
     return tieBreaker === 1 ? getPlayerScore(this, player).colors : undefined
   }
 
+  /**
+   * 45 seconds for the turn of a player: it is the decision the whole territory and the River are read for. 30 seconds for the card to give
+   * at the beginning of the game, and 20 for the Ninjas at the end, a choice made once for the score.
+   * 10 seconds for the rest, the steps of a turn (the 2 cards to swap, the effect of a Traveller...): the player never stopped playing, so
+   * their turn is still the one they were given time for.
+   */
   giveTime(): number {
-    return 60
+    switch (this.game.rule?.id) {
+      case RuleId.PlayerTurn:
+        return 45
+      case RuleId.ExchangeCards:
+        return 30
+      case RuleId.ChooseNinjaCopy:
+        return 20
+      default:
+        return 10
+    }
   }
 }
