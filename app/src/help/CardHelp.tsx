@@ -11,7 +11,8 @@ import Ryokan7 from '../images/cards/ryokan-7.jpg'
 import { cardBackImage } from '../material/cardImages'
 import { NaishiRules } from '@gamepark/naishi/NaishiRules'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
-import { AdjacentCross, Arrow, Cell, CardRow, CountTable, FrameLegend, HelpPage, LShape, MiniCard, P, Section, TerritoryGrid, fullRow, rowOf, times } from './parts'
+import { extensionHelpMove, useRyokanHelpMove } from './ExtensionHelp'
+import { AdjacentCross, Arrow, Cell, CardRow, CountTable, FrameLegend, HelpLink, HelpPage, LShape, MiniCard, P, Section, TerritoryGrid, fullRow, rowOf, times } from './parts'
 
 const c = (id: CardId, label?: string | number): Cell => ({ id, label })
 const characters = [CardId.Naishi, CardId.Advisor, CardId.Sentinel, CardId.Monk, CardId.Horseman, CardId.Ronin]
@@ -106,8 +107,20 @@ const RyokanEffect = () => (
   </div>
 )
 
+/** A Traveller is a card of the extension, and it brings the Ryokan */
+const TravellerIntro = () => {
+  const ryokanHelpMove = useRyokanHelpMove()
+  return (
+    <>
+      <P k="help.traveller.intro" components={{ ext: <HelpLink move={extensionHelpMove} /> }} />
+      <P k="help.traveller.ryokan" components={{ ryokan: <HelpLink move={ryokanHelpMove} /> }} />
+    </>
+  )
+}
+
 const TravellerRule = ({ id, kind, effect }: { id: CardId; kind: 'enter' | 'leave'; effect: ReactNode }) => (
   <>
+    <TravellerIntro />
     <Section title="help.traveller.trigger">
       <P k={kind === 'enter' ? 'help.traveller.enter' : 'help.traveller.leave'} />
       <Trigger id={id} kind={kind} />
@@ -397,7 +410,7 @@ const PlaceNote = ({ type }: { type?: LocationType }) => {
     case LocationType.SetAside:
       return (
         <Section title="help.where.setAside.name">
-          <P k="help.where.setAside" />
+          <P k="help.where.setAside" components={{ ext: <HelpLink move={extensionHelpMove} /> }} />
         </Section>
       )
     case LocationType.Line:

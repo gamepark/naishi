@@ -5,6 +5,7 @@ import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, Ma
 import { Location } from '@gamepark/rules-api'
 import { courtBoardRotation, emissaryReserveGap, lineY, playmatRotation, riverY, rowY, setAsideGap, tableLayout } from './TableLayout'
 import { SwapDropAreaDescription } from './SwapDropAreaDescription'
+import { ExtensionHelpDescription } from './ExtensionHelpDescription'
 
 const riverDeckGap = { x: -0.08, y: -0.2 }
 
@@ -142,13 +143,28 @@ class RyokanSpotLocator extends Locator {
   }
 }
 
-/** The base cards replaced by the Legends, out of play, above the Ryokan */
+/**
+ * The base cards replaced by the Legends, out of play, above the Ryokan.
+ * The location without x is the "?" button in the middle of the bottom card: it opens the help of the extension.
+ */
 class SetAsideLocator extends ListLocator {
   gap = { y: setAsideGap }
+  locationDescription = new ExtensionHelpDescription()
+
+  getLocations(context: MaterialContext) {
+    return context.rules.material(MaterialType.Card).location(LocationType.SetAside).length ? [{ type: LocationType.SetAside }] : []
+  }
 
   getCoordinates() {
     const { ryokanX, setAsideY } = tableLayout()
     return { x: ryokanX, y: setAsideY }
+  }
+
+  getLocationCoordinates(location: Location, context: MaterialContext, index?: number) {
+    if (location.x !== undefined) return super.getLocationCoordinates(location, context, index)
+    const bottom = context.rules.material(MaterialType.Card).location(LocationType.SetAside).length - 1
+    const { ryokanX, setAsideY } = tableLayout()
+    return { x: ryokanX, y: setAsideY + bottom * setAsideGap, z: 1 }
   }
 }
 

@@ -1,17 +1,36 @@
 import { css } from '@emotion/react'
 import { CardId } from '@gamepark/naishi/material/CardId'
-import { ReactNode } from 'react'
+import { usePlay } from '@gamepark/react-game'
+import { MaterialMove } from '@gamepark/rules-api'
+import { ReactElement, ReactNode } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { cardImages } from '../material/cardImages'
 
-/** A text of the help: the translation may use <b>bold</b> */
-export const T = ({ k, values }: { k: string; values?: Record<string, string | number> }) => <Trans i18nKey={k} values={values} components={{ b: <strong /> }} />
+type TextProps = {
+  k: string
+  values?: Record<string, string | number>
+  /** More tags of the translation, a link to another help for instance: `{ ext: <HelpLink move={…} /> }` */
+  components?: Record<string, ReactElement>
+}
 
-export const P = ({ k, values }: { k: string; values?: Record<string, string | number> }) => (
+/** A text of the help: the translation may use <b>bold</b> */
+export const T = ({ k, values, components }: TextProps) => <Trans i18nKey={k} values={values} components={{ b: <strong />, ...components }} />
+
+export const P = (props: TextProps) => (
   <p css={paragraphCss}>
-    <T k={k} values={values} />
+    <T {...props} />
   </p>
 )
+
+/** Opens another help dialog: a link in a text, or a card image */
+export const HelpLink = ({ move, children, card }: { move: MaterialMove; children?: ReactNode; card?: boolean }) => {
+  const play = usePlay()
+  return (
+    <button type="button" css={card ? cardLinkCss : linkCss} onClick={() => play(move, { transient: true })}>
+      {children}
+    </button>
+  )
+}
 
 export const Section = ({ title, children }: { title: string; children: ReactNode }) => {
   const { t } = useTranslation()
@@ -179,6 +198,32 @@ export const LShape = ({ id }: { id: CardId }) => (
 )
 
 export const times = (n: number, cell: Cell): Cell[] => Array.from({ length: n }, () => cell)
+
+const linkCss = css`
+  display: inline;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: bold;
+  color: #b0305a;
+  text-decoration: underline;
+  cursor: pointer;
+`
+
+const cardLinkCss = css`
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.1s;
+
+  &:hover {
+    transform: scale(1.06);
+  }
+`
 
 const paragraphCss = css`
   margin: 0.4em 0;

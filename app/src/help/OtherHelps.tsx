@@ -10,7 +10,8 @@ import Board from '../images/boards/board.png'
 import { setPlaymatPreference, usePlaymatDisplayed, useSubscriber } from '../locators/PlaymatDisplay'
 import Ryokan4 from '../images/cards/ryokan-4.jpg'
 import Ryokan7 from '../images/cards/ryokan-7.jpg'
-import { Arrow, HelpPage, P, Section } from './parts'
+import { extensionHelpMove } from './ExtensionHelp'
+import { Arrow, HelpLink, HelpPage, P, Section } from './parts'
 
 const boardSize = { width: 1396, height: 946 }
 
@@ -124,6 +125,7 @@ export const RyokanHelp = (_props: MaterialHelpProps) => (
     <Section title="help.ryokan.end">
       <P k="help.ryokan.score" />
     </Section>
+    <P k="help.ryokan.extension" components={{ ext: <HelpLink move={extensionHelpMove} /> }} />
   </HelpPage>
 )
 
