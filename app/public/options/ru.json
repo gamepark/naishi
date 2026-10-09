@@ -1,7 +1,4 @@
 {
-  "identities": "Цвет",
-  "identities.1": "Синий",
-  "identities.2": "Красный",
-  "identities.3": "Зелёный",
-  "identities.4": "Жёлтый"
+  "option.legendsAndTravellers": "Дополнение «Легенды и путешественники»",
+  "option.legendsAndTravellers.help": "3 легенды заменяют 3 персонажей, в игру добавляются 5 путешественников и рёкан."
 }

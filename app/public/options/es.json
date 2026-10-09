@@ -1,7 +1,4 @@
 {
-  "identities": "Color",
-  "identities.1": "Azul",
-  "identities.2": "Rojo",
-  "identities.3": "Verde",
-  "identities.4": "Amarillo"
+  "option.legendsAndTravellers": "Expansión Leyendas y Viajeros",
+  "option.legendsAndTravellers.help": "3 leyendas sustituyen a 3 personajes; 5 viajeros y el Ryokan se unen a la partida."
 }

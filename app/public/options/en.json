@@ -1,7 +1,4 @@
 {
-  "identities": "Color",
-  "identities.1": "Blue",
-  "identities.2": "Red",
-  "identities.3": "Green",
-  "identities.4": "Yellow"
+  "option.legendsAndTravellers": "Legends & Travellers expansion",
+  "option.legendsAndTravellers.help": "3 Legends replace 3 characters; 5 Travellers and the Ryokan join the game."
 }
