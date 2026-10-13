@@ -23,9 +23,10 @@ class TerritoryRowLocator extends ListLocator {
     return { x: tableLayout().columnPitch }
   }
 
+  /** z above the mat: at z 0 the first card is coplanar with it, and Firefox draws it under the mat */
   getCoordinates(location: Location, context: MaterialContext) {
     const layout = tableLayout()
-    return { x: layout.firstColumnX, y: rowY(this.row === 'line' ? lineY : layout.handY, location.player, context) }
+    return { x: layout.firstColumnX, y: rowY(this.row === 'line' ? lineY : layout.handY, location.player, context), z: 0.05 }
   }
 }
 
@@ -54,9 +55,10 @@ class RiverLocator extends Locator {
 class RiverDeckLocator extends DeckLocator {
   gap = riverDeckGap
 
+  /** z above the mat: at z 0 the bottom card is coplanar with it, and Firefox draws it under the mat */
   getCoordinates(location: Location) {
     const { firstColumnX, columnPitch } = tableLayout()
-    return { x: firstColumnX + location.id * columnPitch, y: riverY }
+    return { x: firstColumnX + location.id * columnPitch, y: riverY, z: 0.05 }
   }
 }
 
