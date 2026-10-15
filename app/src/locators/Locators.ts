@@ -2,7 +2,8 @@ import { CourtAction, courtSpotsCount } from '@gamepark/naishi/material/CourtAct
 import { LocationType } from '@gamepark/naishi/material/LocationType'
 import { MaterialType } from '@gamepark/naishi/material/MaterialType'
 import { DeckLocator, DropAreaDescription, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
-import { Location } from '@gamepark/rules-api'
+import { Location, MaterialItem } from '@gamepark/rules-api'
+import { zoomOnHover } from './HoverZoom'
 import { courtBoardRotation, emissaryReserveGap, lineY, playmatRotation, riverY, rowY, setAsideGap, tableLayout } from './TableLayout'
 import { SwapDropAreaDescription } from './SwapDropAreaDescription'
 import { ExtensionHelpDescription } from './ExtensionHelpDescription'
@@ -28,6 +29,10 @@ class TerritoryRowLocator extends ListLocator {
     const layout = tableLayout()
     return { x: layout.firstColumnX, y: rowY(this.row === 'line' ? lineY : layout.handY, location.player, context), z: 0.05 }
   }
+
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return zoomOnHover(this, item, context)
+  }
 }
 
 /**
@@ -44,6 +49,10 @@ class RiverLocator extends Locator {
 
   generateLocationDescriptionFromDraggedItem(location: Location, context: ItemContext) {
     return new SwapDropAreaDescription(super.generateLocationDescriptionFromDraggedItem(location, context))
+  }
+
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return zoomOnHover(this, item, context)
   }
 }
 
@@ -126,6 +135,10 @@ class GiftLocator extends Locator {
   getCoordinates(location: Location, context: MaterialContext) {
     return { x: tableLayout().rightSideX, y: rowY(lineY, location.player, context) }
   }
+
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return zoomOnHover(this, item, context)
+  }
 }
 
 /** The First player card is above the panel of the player who has it */
@@ -142,6 +155,10 @@ class RyokanSpotLocator extends Locator {
     const { ryokanX, rightSideX } = tableLayout()
     if (location.player === undefined) return { x: ryokanX, y: riverY }
     return { x: rightSideX, y: rowY(lineY, location.player, context) }
+  }
+
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return zoomOnHover(this, item, context)
   }
 }
 
@@ -168,6 +185,10 @@ class SetAsideLocator extends ListLocator {
     const { ryokanX, setAsideY } = tableLayout()
     return { x: ryokanX, y: setAsideY + bottom * setAsideGap, z: 1 }
   }
+
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return zoomOnHover(this, item, context)
+  }
 }
 
 /** The discard pile, face up, beside the River: the discarded cards are thrown on it, a little crooked, and only the one on top shows */
@@ -178,6 +199,12 @@ class DiscardLocator extends PileLocator {
 
   getCoordinates() {
     return { x: tableLayout().rightSideX, y: riverY }
+  }
+
+  /** Only the card on top grows: the cards are put on the pile in the order of their x */
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    const top = context.rules.material(MaterialType.Card).location(LocationType.Discard).maxBy((card) => card.location.x ?? 0)
+    return top.getIndex() === context.index ? zoomOnHover(this, item, context) : []
   }
 }
 

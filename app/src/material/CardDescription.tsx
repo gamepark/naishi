@@ -13,6 +13,7 @@ import { symbolImage } from './symbolImages'
 import ChooseNinjaButton from '../images/buttons/choose-ninja.jpg'
 import Back from '../images/cards/back.jpg'
 import { cardImages } from './cardImages'
+import { flippedHoverTransform } from '../locators/HoverZoom'
 import { selectSwapCard, useSwapSelection } from './swapSelection'
 
 class NaishiCardDescription extends CardDescription {
@@ -42,6 +43,11 @@ class NaishiCardDescription extends CardDescription {
   getBackImage(itemId: CardId, itemIndex?: number, displayIndex?: number) {
     const copy = itemIndex === undefined ? undefined : this.copies[itemIndex]
     return copy === undefined ? super.getBackImage(itemId, itemIndex, displayIndex) : this.images[copy]
+  }
+
+  /** A Ninja that copies a card shows that card on its back: it grows under the pointer like a face up card */
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return this.isFlipped(item, context) && this.copies[context.index] !== undefined ? flippedHoverTransform(item, context) : super.getHoverTransform(item, context)
   }
 
   /** A swap is played by dragging one of the 2 cards onto the other one */

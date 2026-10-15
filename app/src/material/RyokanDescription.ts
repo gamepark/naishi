@@ -1,5 +1,6 @@
-import { CardDescription } from '@gamepark/react-game'
+import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
+import { flippedHoverTransform } from '../locators/HoverZoom'
 import { RyokanHelp } from '../help/OtherHelps'
 import Face4 from '../images/cards/ryokan-4.jpg'
 import Face7 from '../images/cards/ryokan-7.jpg'
@@ -15,6 +16,11 @@ class RyokanDescription extends CardDescription {
 
   isFlipped(item: Partial<MaterialItem>) {
     return item.location?.rotation === true
+  }
+
+  /** Face 7 is its back, but it is a face to read too */
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    return this.isFlipped(item) ? flippedHoverTransform(item, context) : super.getHoverTransform(item, context)
   }
 }
 
