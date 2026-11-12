@@ -169,7 +169,7 @@ export const CountTable = ({ rows }: { rows: CountRow[] }) => {
     <div css={tableCss}>
       {rows.map((row, index) => (
         <div key={index} css={tableRowCss}>
-          <span css={[tableLabelCss, row.cards.length === 0 && !row.shape && oneLineCss]}>{t(row.label, row.values)}</span>
+          <span css={[tableLabelCss, row.cards.length === 0 && !row.shape && oneLineCss]}>{t(row.label, row.values ?? {})}</span>
           {row.shape ?? <CardRow cells={row.cards} />}
           {row.more && <span css={arrowCss}>…</span>}
           {row.alt && (
